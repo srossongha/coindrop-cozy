@@ -1,17 +1,20 @@
 <script setup lang="ts">
 const { coins, coinsDroppedCount, totalScore, dropCoin, resetCoins } = useCoinDrop()
 
-onMounted(() => {
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
-      e.preventDefault()
-      dropCoin()
-    }
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.code === 'Space') {
+    if ((e.target as HTMLElement)?.tagName === 'BUTTON') return
+    e.preventDefault()
+    dropCoin()
   }
+}
+
+onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
 })
 </script>
 
