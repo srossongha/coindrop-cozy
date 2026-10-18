@@ -7,11 +7,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   nitro: {
-    preset: 'cloudflare_pages',
-    prerender: {
-      autoSubfolderIndex: false,
+    preset: 'cloudflare_module',
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
     },
-    cloudflare: { deployConfig: true, nodeCompat: true },
   },
   vite: {
     plugins: [tailwindcss()],
