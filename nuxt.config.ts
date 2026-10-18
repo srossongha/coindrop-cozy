@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     prerender: {
       autoSubfolderIndex: false,
     },
+    cloudflare: { deployConfig: true, nodeCompat: true },
   },
   vite: {
     plugins: [tailwindcss()],
