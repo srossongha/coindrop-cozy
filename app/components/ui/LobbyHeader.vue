@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import {
   Copy,
   Check,
@@ -10,6 +10,8 @@ import {
   Trophy,
   RotateCcw,
   ArrowLeft,
+  Clock,
+  Trash2,
 } from 'lucide-vue-next'
 import type { Identity, LobbyPhase, LobbyRoom } from '~/types'
 
@@ -23,12 +25,22 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'changePhase', phase: LobbyPhase): void
-  (e: 'resetVotes' | 'leave'): void
+  (e: 'resetVotes' | 'leave' | 'endAndClear'): void
   (e: 'toast', message: string): void
 }>()
 
 const copiedCode = ref(false)
 const copiedLink = ref(false)
+
+const remainingTime = computed(() => {
+  const expiresAt = props.room.expiresAt || props.room.createdAt + 2 * 60 * 60 * 1000
+  const diff = expiresAt - Date.now()
+  if (diff <= 0) return 'Expired'
+  const hours = Math.floor(diff / (1000 * 60 * 60))
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  if (hours > 0) return `${hours}h ${minutes}m left`
+  return `${minutes}m left`
+})
 
 function getShareUrl() {
   if (!import.meta.client) return ''
@@ -126,6 +138,14 @@ function shareTelegram() {
             >
               <span>⚡ Supabase</span>
             </span>
+
+            <span
+              class="text-[10px] text-[#8fa3c4] bg-[#0b1220] border border-[#25314a] px-1.5 py-0.5 rounded flex items-center gap-1 font-mono"
+              title="Lobby data is temporary and automatically deleted after expiration"
+            >
+              <Clock class="w-3 h-3 text-[#74b9ff]" />
+              <span>{{ remainingTime }}</span>
+            </span>
           </div>
         </div>
       </div>
@@ -199,6 +219,17 @@ function shareTelegram() {
           >
             <RotateCcw class="w-3.5 h-3.5" />
             <span>Reopen Voting</span>
+          </button>
+
+          <!-- End Lobby & Clear All Data Permanently -->
+          <button
+            type="button"
+            class="px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
+            title="End lobby and clear all data permanently from database"
+            @click="emit('endAndClear')"
+          >
+            <Trash2 class="w-3.5 h-3.5" />
+            <span class="hidden sm:inline">End & Clear</span>
           </button>
         </template>
       </div>

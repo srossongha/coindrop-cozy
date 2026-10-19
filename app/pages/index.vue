@@ -49,6 +49,7 @@ const {
   createLobby,
   joinLobby,
   leaveLobby,
+  endLobbyAndClearData,
   addIdea,
   updateIdea,
   deleteIdea,
@@ -58,9 +59,10 @@ const {
   resetVotes,
 } = useLobby()
 
-// Local state for landing inputs
+// Local state for landing inputs & loading
 const newRoomTitle = ref('')
 const joinRoomCode = ref('')
+const isJoining = ref(false)
 const toastMessage = ref<string | null>(null)
 
 // Modal states
@@ -88,7 +90,7 @@ function showToast(msg: string) {
   }, 2600)
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 1. Initialize user persona from localStorage
   const user = initIdentity()
   loadRecentRooms()
@@ -99,28 +101,65 @@ onMounted(() => {
     (window.location.hash ? window.location.hash.replace('#', '') : null)
   if (roomQuery && roomQuery.trim()) {
     const targetRoom = roomQuery.trim().toUpperCase()
-    // If identity was newly created or user hasn't explicitly customized, we can still join directly or prompt
-    joinLobby(targetRoom, user)
-    showToast(`Joined lobby: #${targetRoom} 🪙`)
+    isJoining.value = true
+    const result = await joinLobby(targetRoom, user)
+    isJoining.value = false
+    if (result.success) {
+      showToast(`Joined lobby: #${targetRoom} 🪙`)
+    } else {
+      showToast(`Lobby #${targetRoom} was not found or has expired.`)
+      router.replace({ query: {} })
+    }
   }
 })
 
 // Create lobby handler
-function handleCreateLobby() {
+async function handleCreateLobby() {
   const user = identity.value || initIdentity()
-  const room = createLobby(newRoomTitle.value, user)
+  isJoining.value = true
+  const room = await createLobby(newRoomTitle.value, user)
+  isJoining.value = false
   newRoomTitle.value = ''
   showToast(`Created lobby ${room.id}! Share with friends.`)
 }
 
 // Join lobby handler
-function handleJoinLobby() {
+async function handleJoinLobby() {
   if (!joinRoomCode.value.trim()) return
   const user = identity.value || initIdentity()
   const code = joinRoomCode.value.trim().toUpperCase()
-  joinLobby(code, user)
-  joinRoomCode.value = ''
-  showToast(`Joined lobby ${code}!`)
+  isJoining.value = true
+  const result = await joinLobby(code, user)
+  isJoining.value = false
+  if (result.success) {
+    joinRoomCode.value = ''
+    showToast(`Joined lobby ${code}!`)
+  } else {
+    showToast(`Lobby ${code} was not found or has expired.`)
+  }
+}
+
+async function handleRecentLobbyClick(roomId: string) {
+  const user = identity.value || initIdentity()
+  isJoining.value = true
+  const result = await joinLobby(roomId, user)
+  isJoining.value = false
+  if (!result.success) {
+    showToast(`Lobby #${roomId} is expired or no longer exists.`)
+  }
+}
+
+async function handleEndLobby() {
+  if (
+    !confirm(
+      'Are you sure you want to end this lobby? All card ideas and votes will be permanently deleted from the database.',
+    )
+  ) {
+    return
+  }
+  await endLobbyAndClearData()
+  router.replace({ query: {} })
+  showToast('Lobby ended and all data deleted. 🗑️')
 }
 
 // Open modal to add idea
@@ -210,6 +249,17 @@ function handleLeaveLobby() {
       <span>{{ toastMessage }}</span>
     </div>
 
+    <!-- Join Loading Overlay -->
+    <div
+      v-if="isJoining"
+      class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 animate-in fade-in"
+    >
+      <div
+        class="w-10 h-10 border-3 border-[#74b9ff] border-t-transparent rounded-full animate-spin"
+      />
+      <p class="text-xs font-semibold text-[#d0ebff]">Connecting to lobby...</p>
+    </div>
+
     <!-- =================================================== -->
     <!-- SCENARIO A: ACTIVE LOBBY VIEW                       -->
     <!-- =================================================== -->
@@ -224,6 +274,7 @@ function handleLeaveLobby() {
         @change-phase="phase => changePhase(phase)"
         @reset-votes="resetVotes"
         @leave="handleLeaveLobby"
+        @end-and-clear="handleEndLobby"
         @toast="msg => showToast(msg)"
       />
 
@@ -570,7 +621,7 @@ function handleLeaveLobby() {
               :key="r.id"
               type="button"
               class="p-3 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] hover:border-[#74b9ff]/40 text-left transition-all cursor-pointer flex items-center justify-between group"
-              @click="joinLobby(r.id, identity || initIdentity())"
+              @click="handleRecentLobbyClick(r.id)"
             >
               <div class="truncate mr-2">
                 <div class="text-xs font-semibold text-[#eaf2ff] truncate group-hover:text-white">

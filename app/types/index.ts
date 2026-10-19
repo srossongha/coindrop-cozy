@@ -64,6 +64,7 @@ export interface LobbyRoom {
   createdAt: number
   phase: LobbyPhase
   winnerCardId: string | null
+  expiresAt?: number
   ideas: CardIdea[]
   participants: UserIdentity[]
 }
@@ -80,6 +81,7 @@ export interface LobbyWsMessage {
     | 'CHANGE_PHASE'
     | 'RESET_VOTES'
     | 'SYNC_ROOM'
+    | 'LOBBY_DELETED'
   roomId: string
   payload?: unknown
   senderId?: string

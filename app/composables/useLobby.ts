@@ -8,6 +8,7 @@ import type {
   LobbyWsMessage,
   UserIdentity,
 } from '~/types'
+import { LOBBY_TTL_MS } from '~/composables/useSupabase'
 
 const MAX_GOLD_COINS = 5
 const MAX_RED_COINS = 2
@@ -154,6 +155,9 @@ export function useLobby() {
           activeDrop.value = { cardId: data.cardId, coinType: data.coinType, key: Date.now() }
           playCoinSound(data.coinType)
         }
+      },
+      onLobbyDeleted() {
+        leaveLobby()
       },
     })
   }
@@ -393,6 +397,11 @@ export function useLobby() {
         persistRoom(currentRoom.value)
         break
       }
+
+      case 'LOBBY_DELETED': {
+        leaveLobby()
+        break
+      }
     }
   }
 
@@ -406,9 +415,10 @@ export function useLobby() {
   }
 
   // Create a new lobby room
-  function createLobby(title: string, user: Identity): LobbyRoom {
+  async function createLobby(title: string, user: Identity): Promise<LobbyRoom> {
     const randomCode = Math.floor(1000 + Math.random() * 9000)
     const roomId = `DROP-${randomCode}`
+    const createdAt = Date.now()
 
     const newRoom: LobbyRoom = {
       id: roomId,
@@ -416,40 +426,12 @@ export function useLobby() {
       creatorId: user.id,
       creatorName: user.name,
       creatorEmoji: user.emoji,
-      createdAt: Date.now(),
+      createdAt,
+      expiresAt: createdAt + LOBBY_TTL_MS,
       phase: 'ideas',
       winnerCardId: null,
-      ideas: [
-        {
-          id: 'idea-1',
-          title: 'Suki Soup & Sichuan Mala Hotpot 🍲',
-          category: 'Hotpot',
-          priceNote: '~$12/person',
-          link: 'https://maps.google.com',
-          authorId: user.id,
-          authorName: user.name,
-          authorEmoji: user.emoji,
-          createdAt: Date.now() - 120000,
-          votes: {},
-        },
-        {
-          id: 'idea-2',
-          title: 'Rooftop Charcoal BBQ & Skewers 🍢',
-          category: 'BBQ',
-          priceNote: '~$14/person',
-          link: 'https://maps.google.com',
-          authorId: 'sim-fox',
-          authorName: 'Pixel Fox',
-          authorEmoji: '🦊',
-          createdAt: Date.now() - 60000,
-          votes: {},
-        },
-      ],
-      participants: [
-        { id: user.id, name: user.name, emoji: user.emoji },
-        { id: 'sim-fox', name: 'Pixel Fox', emoji: '🦊' },
-        { id: 'sim-panda', name: 'Turbo Panda', emoji: '🐼' },
-      ],
+      ideas: [],
+      participants: [{ id: user.id, name: user.name, emoji: user.emoji }],
     }
 
     currentRoom.value = newRoom
@@ -458,11 +440,9 @@ export function useLobby() {
     connectSocket(roomId, user)
 
     if (supabase.isConfigured.value) {
-      supabase.saveLobby(newRoom)
-      for (const idea of newRoom.ideas) {
-        supabase.saveIdea(idea, newRoom.id)
-      }
+      await supabase.saveLobby(newRoom)
       setupSupabaseRealtime(roomId, user)
+      supabase.cleanupExpiredLobbies()
     }
 
     // Announce sync to server
@@ -476,10 +456,29 @@ export function useLobby() {
   }
 
   // Join an existing lobby room
-  function joinLobby(roomId: string, user: Identity): boolean {
+  async function joinLobby(
+    roomId: string,
+    user: Identity,
+  ): Promise<{ success: boolean; reason?: 'not_found' | 'expired' }> {
     const cleanId = roomId.trim().toUpperCase()
 
-    // 1. Check if room exists in local storage
+    // 1. Fetch from Supabase
+    if (supabase.isConfigured.value) {
+      const remoteRoom = await supabase.fetchRoom(cleanId)
+      if (remoteRoom) {
+        if (!remoteRoom.participants.some(p => p.id === user.id)) {
+          remoteRoom.participants.push({ id: user.id, name: user.name, emoji: user.emoji })
+        }
+        currentRoom.value = remoteRoom
+        persistRoom(remoteRoom)
+        saveRecentRoom(remoteRoom)
+        connectSocket(cleanId, user)
+        setupSupabaseRealtime(cleanId, user)
+        return { success: true }
+      }
+    }
+
+    // 2. Check local storage if previously opened
     let foundRoom: LobbyRoom | null = null
     if (import.meta.client) {
       try {
@@ -492,43 +491,54 @@ export function useLobby() {
       }
     }
 
-    // 2. If not found locally, create a responsive room instance and request sync via WebSocket
-    if (!foundRoom) {
-      foundRoom = {
-        id: cleanId,
-        title: `Lobby #${cleanId}`,
-        creatorId: 'host',
-        creatorName: 'Lobby Host',
-        creatorEmoji: '👑',
-        createdAt: Date.now(),
-        phase: 'ideas',
-        winnerCardId: null,
-        ideas: [],
-        participants: [{ id: user.id, name: user.name, emoji: user.emoji }],
-      }
-    } else {
-      // Add current user to participants if not present
+    if (foundRoom) {
       if (!foundRoom.participants.some(p => p.id === user.id)) {
         foundRoom.participants.push({ id: user.id, name: user.name, emoji: user.emoji })
       }
+      currentRoom.value = foundRoom
+      persistRoom(foundRoom)
+      saveRecentRoom(foundRoom)
+      connectSocket(cleanId, user)
+      return { success: true }
     }
 
-    currentRoom.value = foundRoom
-    persistRoom(foundRoom)
-    saveRecentRoom(foundRoom)
-    connectSocket(cleanId, user)
+    return { success: false, reason: 'not_found' }
+  }
 
+  // Permanently end lobby and clear data from database
+  async function endLobbyAndClearData() {
+    if (!currentRoom.value) return
+    const roomId = currentRoom.value.id
+
+    // Broadcast to peers before wiping
+    sendWsMessage({
+      type: 'LOBBY_DELETED',
+      roomId,
+      payload: {},
+    })
+
+    // Permanently wipe from Supabase
     if (supabase.isConfigured.value) {
-      supabase.fetchRoom(cleanId).then(remoteRoom => {
-        if (remoteRoom && currentRoom.value && currentRoom.value.id === cleanId) {
-          currentRoom.value = remoteRoom
-          persistRoom(remoteRoom)
-        }
-      })
-      setupSupabaseRealtime(cleanId, user)
+      await supabase.deleteRoom(roomId)
     }
 
-    return true
+    // Clean up local storage
+    if (import.meta.client) {
+      try {
+        localStorage.removeItem(`coindrop:room:${roomId}`)
+        const raw = localStorage.getItem('coindrop:recent_lobbies')
+        if (raw) {
+          const recents = JSON.parse(raw) as Array<{ id: string; title: string; createdAt: number }>
+          const filtered = recents.filter(r => r.id !== roomId)
+          localStorage.setItem('coindrop:recent_lobbies', JSON.stringify(filtered))
+          recentRooms.value = filtered
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    leaveLobby()
   }
 
   function leaveLobby() {
@@ -832,6 +842,7 @@ export function useLobby() {
     createLobby,
     joinLobby,
     leaveLobby,
+    endLobbyAndClearData,
     addIdea,
     updateIdea,
     deleteIdea,

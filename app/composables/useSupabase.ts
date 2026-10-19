@@ -1,34 +1,36 @@
 import { createClient, type SupabaseClient, type RealtimeChannel } from '@supabase/supabase-js'
 import type { CardIdea, CoinType, LobbyPhase, LobbyRoom, UserIdentity } from '~/types'
 
+const DEFAULT_SUPABASE_URL = 'https://dblccfthkkdzsfydngaa.supabase.co'
+const DEFAULT_SUPABASE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibGNjZnRoa2tkenNmeWRuZ2FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MDg1MTMsImV4cCI6MjEwNzk4NDUxM30.1avTfM8_5ghnWXPFjQmlxzAjERJm8ycsLIRvu8Gua04'
+
+// Lobbies expire automatically 2 hours after creation
+export const LOBBY_TTL_MS = 2 * 60 * 60 * 1000
+
 let activeChannel: RealtimeChannel | null = null
 
 export function useSupabase() {
   const config = useRuntimeConfig()
-  const supabaseUrl = (config.public?.supabaseUrl as string) || ''
-  const supabaseKey = (config.public?.supabaseKey as string) || ''
+  const rawUrl = (config.public?.supabaseUrl as string) || ''
+  const rawKey = (config.public?.supabaseKey as string) || ''
+
+  const supabaseUrl = rawUrl.startsWith('http') ? rawUrl : DEFAULT_SUPABASE_URL
+  const supabaseKey = rawKey.length > 20 ? rawKey : DEFAULT_SUPABASE_KEY
 
   const isConfigured = computed(() => {
-    return Boolean(
-      supabaseUrl &&
-      supabaseKey &&
-      supabaseUrl.startsWith('http') &&
-      !supabaseUrl.includes('placeholder'),
-    )
+    return Boolean(supabaseUrl && supabaseKey && supabaseUrl.startsWith('http'))
   })
 
   const client = useState<SupabaseClient | null>('supabase_client', () => {
-    if (supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')) {
-      try {
-        return createClient(supabaseUrl, supabaseKey, {
-          auth: { persistSession: false },
-        })
-      } catch (err) {
-        console.warn('[useSupabase] Failed to initialize Supabase client:', err)
-        return null
-      }
+    try {
+      return createClient(supabaseUrl, supabaseKey, {
+        auth: { persistSession: false },
+      })
+    } catch (err) {
+      console.warn('[useSupabase] Failed to initialize Supabase client:', err)
+      return null
     }
-    return null
   })
 
   // Fetch full room data (lobby, ideas, and votes) from Supabase
@@ -44,6 +46,14 @@ export function useSupabase() {
         .single()
 
       if (lobbyError || !lobbyData) {
+        return null
+      }
+
+      // Check if lobby has expired (> 2 hours)
+      const createdAt = new Date(lobbyData.created_at).getTime()
+      if (Date.now() - createdAt > LOBBY_TTL_MS) {
+        // Automatically delete expired lobby from database
+        await client.value.from('coindrop_lobbies').delete().eq('id', roomId)
         return null
       }
 
@@ -95,7 +105,8 @@ export function useSupabase() {
         creatorId: lobbyData.creator_id,
         creatorName: lobbyData.creator_name,
         creatorEmoji: lobbyData.creator_emoji,
-        createdAt: new Date(lobbyData.created_at).getTime(),
+        createdAt,
+        expiresAt: createdAt + LOBBY_TTL_MS,
         phase: lobbyData.phase as LobbyPhase,
         winnerCardId: lobbyData.winner_card_id,
         ideas,
@@ -206,6 +217,29 @@ export function useSupabase() {
     }
   }
 
+  // Permanently delete a lobby and its related ideas/votes
+  async function deleteRoom(roomId: string) {
+    if (!client.value) return
+
+    try {
+      await client.value.from('coindrop_lobbies').delete().eq('id', roomId)
+    } catch (err) {
+      console.warn('[useSupabase] deleteRoom error:', err)
+    }
+  }
+
+  // Periodic cleanup of all expired lobbies
+  async function cleanupExpiredLobbies() {
+    if (!client.value) return
+
+    try {
+      const expirationThreshold = new Date(Date.now() - LOBBY_TTL_MS).toISOString()
+      await client.value.from('coindrop_lobbies').delete().lt('created_at', expirationThreshold)
+    } catch {
+      /* ignore */
+    }
+  }
+
   // Subscribe to real-time changes on a lobby
   function subscribeToLobby(
     roomId: string,
@@ -215,6 +249,7 @@ export function useSupabase() {
       onIdeaChange?: (type: 'INSERT' | 'UPDATE' | 'DELETE', idea: Record<string, unknown>) => void
       onVoteChange?: (vote: Record<string, unknown>) => void
       onDropBroadcast?: (data: { cardId: string; coinType: CoinType; userId: string }) => void
+      onLobbyDeleted?: () => void
     },
   ) {
     if (!client.value) return null
@@ -243,7 +278,11 @@ export function useSupabase() {
           filter: `id=eq.${roomId}`,
         },
         payload => {
-          callbacks.onLobbyChange?.(payload.new as Record<string, unknown>)
+          if (payload.eventType === 'DELETE') {
+            callbacks.onLobbyDeleted?.()
+          } else {
+            callbacks.onLobbyChange?.(payload.new as Record<string, unknown>)
+          }
         },
       )
       .on(
@@ -320,6 +359,8 @@ export function useSupabase() {
     removeIdea,
     saveVote,
     resetVotes,
+    deleteRoom,
+    cleanupExpiredLobbies,
     subscribeToLobby,
     broadcastCoinDrop,
     unsubscribe,
