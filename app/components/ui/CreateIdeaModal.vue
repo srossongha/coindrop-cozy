@@ -104,11 +104,14 @@ function handleDelete() {
             {{ existingIdea ? 'Edit Card Option' : 'Propose a Card Idea' }}
           </h2>
           <p class="text-[11px] sm:text-xs text-text-muted">
-            {{
-              existingIdea
-                ? 'Update details before voting locks in.'
-                : 'Suggest an option for the group to vote with their coins!'
-            }}
+            <span class="sm:hidden">{{ existingIdea ? 'Update details.' : 'Suggest an option to vote on.' }}</span>
+            <span class="hidden sm:inline">
+              {{
+                existingIdea
+                  ? 'Update details before voting locks in.'
+                  : 'Suggest an option for the group to vote with their coins!'
+              }}
+            </span>
           </p>
         </div>
       </div>
@@ -155,7 +158,7 @@ function handleDelete() {
               class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1"
             >
               <DollarSign class="w-3.5 h-3.5 text-gold" />
-              <span>Est. Cost / Note</span>
+              <span><span class="hidden sm:inline">Est. </span>Cost / Note</span>
             </label>
             <input
               v-model="priceNote"
@@ -170,7 +173,7 @@ function handleDelete() {
               class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1"
             >
               <MapPin class="w-3.5 h-3.5 text-sky-end" />
-              <span>Google Maps / Link</span>
+              <span><span class="hidden sm:inline">Google Maps / </span>Link</span>
             </label>
             <input
               v-model="link"
@@ -186,7 +189,7 @@ function handleDelete() {
           <label
             class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1"
           >
-            Short Description (Optional)
+            <span class="hidden sm:inline">Short </span>Description (Optional)
           </label>
           <textarea
             v-model="description"
@@ -213,7 +216,10 @@ function handleDelete() {
             class="flex-1 py-3 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-lg transition-all duration-200 hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Check class="w-4 h-4" />
-            <span>{{ existingIdea ? 'Save Changes' : 'Add to Decision Board' }}</span>
+            <span>
+              <span class="sm:hidden">{{ existingIdea ? 'Save Changes' : 'Add Option' }}</span>
+              <span class="hidden sm:inline">{{ existingIdea ? 'Save Changes' : 'Add to Decision Board' }}</span>
+            </span>
           </button>
         </div>
       </form>

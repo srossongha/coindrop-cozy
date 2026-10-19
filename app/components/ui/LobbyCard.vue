@@ -126,7 +126,8 @@ function getSafeLink(url?: string): string {
 
         <!-- Proposer Credit -->
         <div class="text-[11px] text-text-muted/70 mb-4 flex items-center gap-1.5">
-          <span>Proposed by</span>
+          <span class="sm:hidden">by</span>
+          <span class="hidden sm:inline">Proposed by</span>
           <span class="inline-flex items-center gap-1 font-medium text-text-primary">
             <span>{{ card.authorEmoji }}</span>
             <span>{{ card.authorName }}</span>

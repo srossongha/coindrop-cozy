@@ -198,7 +198,7 @@ function handleEditIdentityFromRoster() {
             @click="emit('changePhase', 'voting')"
           >
             <Play class="w-3.5 h-3.5 fill-[#0b1220]" />
-            <span><span class="hidden sm:inline">Start </span>Voting 🪙</span>
+            <span><span class="sm:hidden">Vote 🪙</span><span class="hidden sm:inline">Start Voting 🪙</span></span>
           </button>
 
           <button
@@ -208,7 +208,7 @@ function handleEditIdentityFromRoster() {
             @click="emit('changePhase', 'finished')"
           >
             <Trophy class="w-3.5 h-3.5" />
-            <span><span class="hidden sm:inline">Reveal </span>Winner 🏆</span>
+            <span><span class="sm:hidden">Winner 🏆</span><span class="hidden sm:inline">Reveal Winner 🏆</span></span>
           </button>
 
           <!-- 4. Host More Menu (•••) for Secondary Actions (Reset, End, etc.) -->
@@ -298,7 +298,10 @@ function handleEditIdentityFromRoster() {
               </div>
               <div>
                 <h3 class="text-sm font-bold text-text-primary">Invite Friends</h3>
-                <p class="text-[11px] text-text-muted">Zero signup required to join</p>
+                <p class="text-[11px] text-text-muted">
+                  <span class="sm:hidden">No signup needed</span>
+                  <span class="hidden sm:inline">Zero signup required to join</span>
+                </p>
               </div>
             </div>
 
@@ -334,7 +337,10 @@ function handleEditIdentityFromRoster() {
                 @click="shareTelegram"
               >
                 <Send class="w-4 h-4" />
-                <span>Share to Telegram</span>
+                <span>
+                  <span class="sm:hidden">Telegram</span>
+                  <span class="hidden sm:inline">Share to Telegram</span>
+                </span>
               </button>
 
               <!-- Copy Direct Link -->
@@ -345,7 +351,10 @@ function handleEditIdentityFromRoster() {
               >
                 <Check v-if="copiedLink" class="w-4 h-4 text-emerald" />
                 <Copy v-else class="w-4 h-4 text-sky-end" />
-                <span>{{ copiedLink ? 'Copied Link!' : 'Copy Direct Link' }}</span>
+                <span>
+                  <span class="sm:hidden">{{ copiedLink ? 'Copied!' : 'Copy Link' }}</span>
+                  <span class="hidden sm:inline">{{ copiedLink ? 'Copied Link!' : 'Copy Direct Link' }}</span>
+                </span>
               </button>
             </div>
           </div>
@@ -389,7 +398,10 @@ function handleEditIdentityFromRoster() {
                     <span>{{ currentUser.name }}</span>
                     <span class="text-[10px] text-sky-end font-normal">(you)</span>
                   </div>
-                  <span class="text-[10px] text-text-muted">Tap to change name or mascot</span>
+                  <span class="text-[10px] text-text-muted">
+                    <span class="sm:hidden">Tap to edit</span>
+                    <span class="hidden sm:inline">Tap to change name or mascot</span>
+                  </span>
                 </div>
               </div>
               <button

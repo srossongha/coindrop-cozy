@@ -457,13 +457,24 @@ function handleLeaveLobby() {
 
             <div class="min-w-0">
               <span class="text-xs sm:text-sm font-bold text-text-primary block truncate">
-                {{
-                  currentRoom.phase === 'ideas'
-                    ? 'Brainstorming Options'
-                    : currentRoom.phase === 'voting'
-                      ? 'Live Voting Phase'
-                      : 'Winner Decided!'
-                }}
+                <span class="sm:hidden">
+                  {{
+                    currentRoom.phase === 'ideas'
+                      ? '1. Add Options'
+                      : currentRoom.phase === 'voting'
+                        ? '2. Drop Coins'
+                        : 'Winner Decided!'
+                  }}
+                </span>
+                <span class="hidden sm:inline">
+                  {{
+                    currentRoom.phase === 'ideas'
+                      ? 'Brainstorming Options'
+                      : currentRoom.phase === 'voting'
+                        ? 'Live Voting Phase'
+                        : 'Winner Decided!'
+                  }}
+                </span>
               </span>
               <span class="text-[11px] text-text-muted hidden md:block">
                 {{
@@ -485,7 +496,7 @@ function handleLeaveLobby() {
             @click="handleOpenAddIdea"
           >
             <Plus class="w-3.5 h-3.5" />
-            <span><span class="hidden sm:inline">Add </span>Option</span>
+            <span><span class="sm:hidden">Add</span><span class="hidden sm:inline">Add Option</span></span>
           </button>
         </div>
 
@@ -503,21 +514,28 @@ function handleLeaveLobby() {
             >
               <Trophy class="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <h2 class="text-lg sm:text-2xl font-black text-text-primary mb-1 relative z-10">
-              Winning Decision: {{ winningCard.title }}!
+            <h2 class="text-base sm:text-2xl font-black text-text-primary mb-1 relative z-10">
+              <span class="sm:hidden">Winner: {{ winningCard.title }}!</span>
+              <span class="hidden sm:inline">Winning Decision: {{ winningCard.title }}!</span>
             </h2>
             <p class="text-xs sm:text-sm text-text-muted max-w-md mx-auto mb-3 relative z-10">
-              Winner with
-              <span class="text-sky-end font-bold">
-                {{ winningCard.totalScore }} total points
+              <span class="sm:hidden">
+                {{ winningCard.totalScore }} pts ({{ winningCard.totalGold }} 🪙, {{ winningCard.totalRed }} 🔴)
               </span>
-              ({{ winningCard.totalGold }} Gold 🪙, {{ winningCard.totalRed }} Red 🔴)!
+              <span class="hidden sm:inline">
+                Winner with
+                <span class="text-sky-end font-bold">
+                  {{ winningCard.totalScore }} total points
+                </span>
+                ({{ winningCard.totalGold }} Gold 🪙, {{ winningCard.totalRed }} Red 🔴)!
+              </span>
             </p>
             <div class="flex items-center justify-center gap-2 relative z-10">
               <span
                 class="text-xs px-3 py-1 rounded-full bg-canvas border border-line text-text-muted"
               >
-                Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}
+                <span class="sm:hidden">by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span>
+                <span class="hidden sm:inline">Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span>
               </span>
             </div>
           </div>
@@ -551,25 +569,34 @@ function handleLeaveLobby() {
         <!-- Empty State if no cards added yet -->
         <div
           v-else
-          class="p-12 text-center rounded-[16px] bg-card border border-dashed border-line flex flex-col items-center justify-center"
+          class="p-8 sm:p-12 text-center rounded-[16px] bg-card border border-dashed border-line flex flex-col items-center justify-center"
         >
           <div
-            class="w-14 h-14 rounded-2xl bg-canvas border border-line flex items-center justify-center text-2xl mb-3 shadow-inner"
+            class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-canvas border border-line flex items-center justify-center text-xl sm:text-2xl mb-3 shadow-inner"
           >
             💡
           </div>
-          <h3 class="text-base font-bold text-text-primary mb-1">No Card Ideas Yet</h3>
+          <h3 class="text-sm sm:text-base font-bold text-text-primary mb-1">
+            <span class="sm:hidden">No options yet</span>
+            <span class="hidden sm:inline">No Card Ideas Yet</span>
+          </h3>
           <p class="text-xs text-text-muted max-w-sm mb-4">
-            Be the first to propose an option! Once added, your friends can drop coins to decide
-            together.
+            <span class="sm:hidden">Add the first idea for friends to vote on!</span>
+            <span class="hidden sm:inline">
+              Be the first to propose an option! Once added, your friends can drop coins to decide
+              together.
+            </span>
           </p>
           <button
             type="button"
-            class="px-4 py-2.5 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            class="px-4 py-2 sm:py-2.5 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
             @click="handleOpenAddIdea"
           >
             <Plus class="w-4 h-4" />
-            <span>Propose First Idea</span>
+            <span>
+              <span class="sm:hidden">Add Idea</span>
+              <span class="hidden sm:inline">Propose First Idea</span>
+            </span>
           </button>
         </div>
       </main>
@@ -634,12 +661,13 @@ function handleLeaveLobby() {
         class="max-w-4xl mx-auto w-full px-3.5 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center relative z-10"
       >
         <!-- Hero Header -->
-        <div class="text-center mb-6 sm:mb-10">
+        <div class="text-center mb-5 sm:mb-10">
           <div
-            class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-card border border-line text-[11px] sm:text-xs text-sky-soft mb-3 sm:mb-4 shadow-sm"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-line text-[11px] sm:text-xs text-sky-soft mb-2.5 sm:mb-4 shadow-sm"
           >
             <span class="w-2 h-2 rounded-full bg-emerald animate-pulse shrink-0" />
-            <span class="font-medium tracking-wide"
+            <span class="font-medium tracking-wide sm:hidden">No signup • Drop coins to vote</span>
+            <span class="font-medium tracking-wide hidden sm:inline"
               >Live Multiplayer Decision Lounge • No Signup Required</span
             >
           </div>
@@ -647,15 +675,26 @@ function handleLeaveLobby() {
           <h1
             class="text-2xl xs:text-3xl sm:text-5xl font-black text-text-primary tracking-tight leading-tight mb-2 sm:mb-3"
           >
-            Group decisions made fun.<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
-              Just drop your coins.
+            <span class="sm:hidden">
+              Decide together.<br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
+                Drop coins to vote.
+              </span>
+            </span>
+            <span class="hidden sm:inline">
+              Group decisions made fun.<br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
+                Just drop your coins.
+              </span>
             </span>
           </h1>
 
           <p class="text-xs sm:text-base text-text-muted max-w-xl mx-auto leading-relaxed">
-            Create a cozy lobby, invite friends via Telegram or code, brainstorm card ideas, and
-            drop your gold & red coins to vote live.
+            <span class="sm:hidden">Invite friends, add ideas, and pick a winner.</span>
+            <span class="hidden sm:inline">
+              Create a cozy lobby, invite friends via Telegram or code, brainstorm card ideas, and
+              drop your gold & red coins to vote live.
+            </span>
           </p>
         </div>
 
@@ -683,7 +722,7 @@ function handleLeaveLobby() {
               @click="setLandingTab('create')"
             >
               <Plus class="w-3.5 h-3.5" />
-              <span>Create Lobby</span>
+              <span>Create<span class="hidden sm:inline"> Lobby</span></span>
             </button>
             <button
               type="button"
@@ -694,7 +733,7 @@ function handleLeaveLobby() {
               @click="setLandingTab('join')"
             >
               <Users class="w-3.5 h-3.5" />
-              <span>Join with Code</span>
+              <span>Join<span class="hidden sm:inline"> with Code</span></span>
             </button>
           </div>
 
@@ -709,12 +748,13 @@ function handleLeaveLobby() {
                 <div v-if="landingTab === 'create'" key="create" class="space-y-4">
                   <div>
                     <label class="block text-xs font-bold text-text-primary mb-1.5">
-                      What are you deciding?
+                      <span class="sm:hidden">What's the plan?</span>
+                      <span class="hidden sm:inline">What are you deciding?</span>
                     </label>
                     <input
                       v-model="newRoomTitle"
                       type="text"
-                      placeholder="e.g. Friday Night Hotpot 🍲"
+                      placeholder="e.g. Friday Hotpot 🍲"
                       class="w-full bg-canvas border border-line rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
                       @keydown.enter="handleCreateLobby"
                     />
@@ -723,10 +763,13 @@ function handleLeaveLobby() {
                   <!-- Quick Topic Chips -->
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <button
-                      v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
+                      v-for="(sug, idx) in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
                       :key="sug"
                       type="button"
-                      class="px-2.5 py-1 rounded-lg bg-canvas hover:bg-line border border-line text-text-muted hover:text-sky-soft text-xs transition-colors cursor-pointer active:scale-95"
+                      :class="[
+                        'px-2.5 py-1 rounded-lg bg-canvas hover:bg-line border border-line text-text-muted hover:text-sky-soft text-xs transition-colors cursor-pointer active:scale-95',
+                        idx >= 3 ? 'hidden sm:inline-block' : '',
+                      ]"
                       @click="newRoomTitle = sug"
                     >
                       {{ sug }}
@@ -738,7 +781,10 @@ function handleLeaveLobby() {
                     class="w-full py-3 rounded-xl bg-sky-gradient text-canvas font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
                     @click="handleCreateLobby"
                   >
-                    <span>Create Lobby & Drop Coins</span>
+                    <span>
+                      <span class="sm:hidden">Create Lobby</span>
+                      <span class="hidden sm:inline">Create Lobby & Drop Coins</span>
+                    </span>
                     <ArrowRight class="w-4 h-4" />
                   </button>
                 </div>
@@ -747,16 +793,17 @@ function handleLeaveLobby() {
                 <div v-else key="join" class="space-y-4">
                   <div>
                     <label class="block text-xs font-bold text-text-primary mb-1.5">
-                      Enter 4-Digit Room Code
+                      <span class="sm:hidden">Room Code</span>
+                      <span class="hidden sm:inline">Enter 4-Digit Room Code</span>
                     </label>
                     <input
                       v-model="joinRoomCode"
                       type="text"
-                      placeholder="e.g. 2785 or DROP-2785"
+                      placeholder="e.g. 2785"
                       class="w-full bg-canvas border border-line rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-text-primary uppercase font-mono tracking-wider placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
                       @keydown.enter="handleJoinLobby"
                     />
-                    <p class="text-[11px] text-text-muted mt-1.5">
+                    <p class="text-[11px] text-text-muted mt-1.5 hidden sm:block">
                       Tip: Or just tap the invite link sent to you in Telegram.
                     </p>
                   </div>
@@ -802,52 +849,61 @@ function handleLeaveLobby() {
           </div>
         </div>
 
-        <!-- How It Works (3-Step Micro Guide for Real Product Experience) -->
-        <div class="w-full max-w-2xl mx-auto mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-line/60">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
+        <!-- How It Works (Micro 3-Step Guide) -->
+        <div class="w-full max-w-2xl mx-auto mt-5 sm:mt-8 pt-5 sm:pt-8 border-t border-line/60">
+          <div class="grid grid-cols-3 gap-1.5 sm:gap-3.5">
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
+              class="p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-card/70 border border-line text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-[11px] sm:text-xs shrink-0 shadow-sm"
               >
                 1
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-text-primary truncate">Invite in 1-Click</h4>
-                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                <h4 class="text-[11px] sm:text-xs font-bold text-text-primary truncate">
+                  <span class="sm:hidden">Invite</span>
+                  <span class="hidden sm:inline">Invite in 1-Click</span>
+                </h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed hidden sm:block">
                   Share the 4-digit code or direct Telegram link with friends.
                 </p>
               </div>
             </div>
 
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
+              class="p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-card/70 border border-line text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-[11px] sm:text-xs shrink-0 shadow-sm"
               >
                 2
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-text-primary truncate">Pitch Card Ideas</h4>
-                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                <h4 class="text-[11px] sm:text-xs font-bold text-text-primary truncate">
+                  <span class="sm:hidden">Add ideas</span>
+                  <span class="hidden sm:inline">Pitch Card Ideas</span>
+                </h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed hidden sm:block">
                   Everyone adds food spots, movies, or activities to the board.
                 </p>
               </div>
             </div>
 
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
+              class="p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-card/70 border border-line text-center sm:text-left flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-[11px] sm:text-xs shrink-0 shadow-sm"
               >
                 3
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-text-primary truncate">Drop Coins & Decide</h4>
-                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                <h4 class="text-[11px] sm:text-xs font-bold text-text-primary truncate">
+                  <span class="sm:hidden">Drop coins</span>
+                  <span class="hidden sm:inline">Drop Coins & Decide</span>
+                </h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed hidden sm:block">
                   Vote in real-time with gold and red coins. Watch the winner emerge!
                 </p>
               </div>
@@ -858,18 +914,19 @@ function handleLeaveLobby() {
 
       <!-- Real Product Clean Footer -->
       <footer
-        class="w-full border-t border-line/60 py-5 sm:py-6 px-4 mt-auto relative z-10 text-center"
+        class="w-full border-t border-line/60 py-4 sm:py-6 px-4 mt-auto relative z-10 text-center"
       >
         <div
-          class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-text-muted"
+          class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted"
         >
           <div class="flex items-center gap-2">
             <span class="text-sm">🪙</span>
             <span class="font-bold text-text-primary">CoinDrop</span>
             <span class="text-line">•</span>
-            <span>Zero-signup multiplayer decision lounge</span>
+            <span class="sm:hidden">Multiplayer decisions</span>
+            <span class="hidden sm:inline">Zero-signup multiplayer decision lounge</span>
           </div>
-          <div class="flex items-center gap-3 text-[11px]">
+          <div class="flex items-center gap-3 text-[11px] hidden sm:flex">
             <span class="flex items-center gap-1 text-emerald">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
               <span>Realtime</span>

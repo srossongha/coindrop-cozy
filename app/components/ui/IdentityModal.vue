@@ -89,21 +89,25 @@ function handleSave() {
             <Sparkles class="w-4 h-4 text-sky-end" />
           </h2>
           <p class="text-[11px] sm:text-xs text-text-muted">
-            {{ description }}
+            <span class="sm:hidden">Pick a nickname & emoji to join.</span>
+            <span class="hidden sm:inline">{{ description }}</span>
           </p>
         </div>
       </div>
 
       <!-- Quick Randomize -->
       <div class="flex items-center justify-between mb-4 mt-3 pt-3 border-t border-line">
-        <span class="text-xs font-semibold text-text-muted">Need inspiration?</span>
+        <span class="text-xs font-semibold text-text-muted hidden sm:inline">Need inspiration?</span>
         <button
           type="button"
-          class="text-xs text-sky-end hover:text-sky-soft flex items-center gap-1 font-semibold cursor-pointer active:scale-95"
+          class="text-xs text-sky-end hover:text-sky-soft flex items-center gap-1 font-semibold cursor-pointer active:scale-95 ml-auto sm:ml-0"
           @click="pickRandomPersona"
         >
           <Shuffle class="w-3.5 h-3.5" />
-          <span>Roll random</span>
+          <span>
+            <span class="sm:hidden">Randomize 🎲</span>
+            <span class="hidden sm:inline">Roll random</span>
+          </span>
         </button>
       </div>
 
@@ -156,7 +160,10 @@ function handleSave() {
         @click="handleSave"
       >
         <Check class="w-4 h-4" />
-        <span>{{ props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨' }}</span>
+        <span>
+          <span class="sm:hidden">{{ props.isMandatory ? 'Join Lobby 🚀' : 'Save ✨' }}</span>
+          <span class="hidden sm:inline">{{ props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨' }}</span>
+        </span>
       </button>
     </div>
   </div>
