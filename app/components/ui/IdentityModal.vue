@@ -97,7 +97,9 @@ function handleSave() {
 
       <!-- Quick Randomize -->
       <div class="flex items-center justify-between mb-4 mt-3 pt-3 border-t border-line">
-        <span class="text-xs font-semibold text-text-muted hidden sm:inline">Need inspiration?</span>
+        <span class="text-xs font-semibold text-text-muted hidden sm:inline"
+          >Need inspiration?</span
+        >
         <button
           type="button"
           class="text-xs text-sky-end hover:text-sky-soft flex items-center gap-1 font-semibold cursor-pointer active:scale-95 ml-auto sm:ml-0"
@@ -162,7 +164,9 @@ function handleSave() {
         <Check class="w-4 h-4" />
         <span>
           <span class="sm:hidden">{{ props.isMandatory ? 'Join Lobby 🚀' : 'Save ✨' }}</span>
-          <span class="hidden sm:inline">{{ props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨' }}</span>
+          <span class="hidden sm:inline">{{
+            props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨'
+          }}</span>
         </span>
       </button>
     </div>

@@ -114,6 +114,12 @@ function handleEditIdentityFromRoster() {
           <ArrowLeft class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
 
+        <div
+          class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-canvas border border-line flex items-center justify-center p-0.5 shadow-xs shrink-0 overflow-hidden hidden xs:flex"
+        >
+          <img src="/logo-mark.png" alt="CoinDrop" class="w-full h-full object-contain" />
+        </div>
+
         <div class="min-w-0">
           <div class="flex items-center gap-1.5 sm:gap-2">
             <h1
@@ -198,7 +204,10 @@ function handleEditIdentityFromRoster() {
             @click="emit('changePhase', 'voting')"
           >
             <Play class="w-3.5 h-3.5 fill-[#0b1220]" />
-            <span><span class="sm:hidden">Vote 🪙</span><span class="hidden sm:inline">Start Voting 🪙</span></span>
+            <span
+              ><span class="sm:hidden">Vote 🪙</span
+              ><span class="hidden sm:inline">Start Voting 🪙</span></span
+            >
           </button>
 
           <button
@@ -208,7 +217,10 @@ function handleEditIdentityFromRoster() {
             @click="emit('changePhase', 'finished')"
           >
             <Trophy class="w-3.5 h-3.5" />
-            <span><span class="sm:hidden">Winner 🏆</span><span class="hidden sm:inline">Reveal Winner 🏆</span></span>
+            <span
+              ><span class="sm:hidden">Winner 🏆</span
+              ><span class="hidden sm:inline">Reveal Winner 🏆</span></span
+            >
           </button>
 
           <!-- 4. Host More Menu (•••) for Secondary Actions (Reset, End, etc.) -->
@@ -353,7 +365,9 @@ function handleEditIdentityFromRoster() {
                 <Copy v-else class="w-4 h-4 text-sky-end" />
                 <span>
                   <span class="sm:hidden">{{ copiedLink ? 'Copied!' : 'Copy Link' }}</span>
-                  <span class="hidden sm:inline">{{ copiedLink ? 'Copied Link!' : 'Copy Direct Link' }}</span>
+                  <span class="hidden sm:inline">{{
+                    copiedLink ? 'Copied Link!' : 'Copy Direct Link'
+                  }}</span>
                 </span>
               </button>
             </div>

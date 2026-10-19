@@ -1,4 +1,8 @@
-# 🪙 CoinDrop
+<p align="center">
+  <a href="https://coindrop-nuxt.sanghakh122333.workers.dev/">
+    <img src="public/logo.png" alt="CoinDrop Logo" width="260" />
+  </a>
+</p>
 
 <p align="center">
   <strong>Cozy Multiplayer Decision Lobby</strong><br>

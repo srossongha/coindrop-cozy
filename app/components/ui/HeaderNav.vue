@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Coins, Plus, Code2, Edit3 } from 'lucide-vue-next'
+import { Plus, Code2, Edit3 } from 'lucide-vue-next'
 import type { DecisionRoom, UserProfile } from '~/types'
 import SmartAvatarOverflow from './SmartAvatarOverflow.vue'
 
@@ -26,9 +26,9 @@ const emit = defineEmits<{
       <!-- Brand Logo & Room Switcher -->
       <div class="flex items-center gap-3 min-w-0">
         <div
-          class="w-10 h-10 rounded-2xl bg-card border border-line flex items-center justify-center shadow-sm shrink-0"
+          class="w-10 h-10 rounded-2xl bg-canvas border border-line flex items-center justify-center p-1.5 shadow-sm shrink-0 overflow-hidden"
         >
-          <Coins class="w-5 h-5 text-gold stroke-[2.5]" />
+          <img src="/logo-mark.png" alt="CoinDrop" class="w-full h-full object-contain" />
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-2">

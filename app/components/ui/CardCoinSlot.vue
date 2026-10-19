@@ -186,7 +186,9 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
 
           <span v-else class="text-[11px] text-text-muted/50 italic">
             <span class="sm:hidden">{{ isVotingPhase ? 'Drop coins' : 'Proposed' }}</span>
-            <span class="hidden sm:inline">{{ isVotingPhase ? 'Ready for coins...' : 'Idea proposed' }}</span>
+            <span class="hidden sm:inline">{{
+              isVotingPhase ? 'Ready for coins...' : 'Idea proposed'
+            }}</span>
           </span>
         </div>
 

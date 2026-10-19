@@ -104,7 +104,9 @@ function handleDelete() {
             {{ existingIdea ? 'Edit Card Option' : 'Propose a Card Idea' }}
           </h2>
           <p class="text-[11px] sm:text-xs text-text-muted">
-            <span class="sm:hidden">{{ existingIdea ? 'Update details.' : 'Suggest an option to vote on.' }}</span>
+            <span class="sm:hidden">{{
+              existingIdea ? 'Update details.' : 'Suggest an option to vote on.'
+            }}</span>
             <span class="hidden sm:inline">
               {{
                 existingIdea
@@ -218,7 +220,9 @@ function handleDelete() {
             <Check class="w-4 h-4" />
             <span>
               <span class="sm:hidden">{{ existingIdea ? 'Save Changes' : 'Add Option' }}</span>
-              <span class="hidden sm:inline">{{ existingIdea ? 'Save Changes' : 'Add to Decision Board' }}</span>
+              <span class="hidden sm:inline">{{
+                existingIdea ? 'Save Changes' : 'Add to Decision Board'
+              }}</span>
             </span>
           </button>
         </div>

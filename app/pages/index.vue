@@ -496,7 +496,10 @@ function handleLeaveLobby() {
             @click="handleOpenAddIdea"
           >
             <Plus class="w-3.5 h-3.5" />
-            <span><span class="sm:hidden">Add</span><span class="hidden sm:inline">Add Option</span></span>
+            <span
+              ><span class="sm:hidden">Add</span
+              ><span class="hidden sm:inline">Add Option</span></span
+            >
           </button>
         </div>
 
@@ -520,7 +523,8 @@ function handleLeaveLobby() {
             </h2>
             <p class="text-xs sm:text-sm text-text-muted max-w-md mx-auto mb-3 relative z-10">
               <span class="sm:hidden">
-                {{ winningCard.totalScore }} pts ({{ winningCard.totalGold }} 🪙, {{ winningCard.totalRed }} 🔴)
+                {{ winningCard.totalScore }} pts ({{ winningCard.totalGold }} 🪙,
+                {{ winningCard.totalRed }} 🔴)
               </span>
               <span class="hidden sm:inline">
                 Winner with
@@ -534,8 +538,12 @@ function handleLeaveLobby() {
               <span
                 class="text-xs px-3 py-1 rounded-full bg-canvas border border-line text-text-muted"
               >
-                <span class="sm:hidden">by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span>
-                <span class="hidden sm:inline">Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span>
+                <span class="sm:hidden"
+                  >by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span
+                >
+                <span class="hidden sm:inline"
+                  >Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}</span
+                >
               </span>
             </div>
           </div>
@@ -625,16 +633,16 @@ function handleLeaveLobby() {
           <!-- Logo & Brand -->
           <div class="flex items-center gap-2 sm:gap-2.5">
             <div
-              class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center text-base sm:text-lg font-black shadow-md shrink-0"
+              class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-canvas border border-line flex items-center justify-center p-1 shadow-sm shrink-0 overflow-hidden"
             >
-              🪙
+              <img src="/logo-mark.png" alt="CoinDrop" class="w-full h-full object-contain" />
             </div>
-            <div>
+            <div class="flex items-center">
               <span class="text-sm sm:text-base font-bold text-text-primary tracking-tight"
                 >CoinDrop</span
               >
               <span
-                class="text-[9px] sm:text-[10px] ml-1 sm:ml-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-sky-end/15 text-sky-end border border-sky-end/30 font-semibold uppercase tracking-wider"
+                class="text-[9px] sm:text-[10px] ml-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-sky-end/15 text-sky-end border border-sky-end/30 font-semibold uppercase tracking-wider"
               >
                 Multiplayer
               </span>
@@ -662,6 +670,20 @@ function handleLeaveLobby() {
       >
         <!-- Hero Header -->
         <div class="text-center mb-5 sm:mb-10">
+          <!-- Animated Brand Logo Visual -->
+          <div class="flex justify-center mb-3 sm:mb-4">
+            <div class="relative group">
+              <div
+                class="absolute -inset-3 bg-gradient-to-r from-sky-start/20 via-gold/25 to-red-super/25 rounded-full blur-xl opacity-70 group-hover:opacity-100 transition duration-500 pointer-events-none"
+              />
+              <img
+                src="/logo-mark.png"
+                alt="CoinDrop"
+                class="relative w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl transform group-hover:scale-105 transition duration-300"
+              />
+            </div>
+          </div>
+
           <div
             class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-line text-[11px] sm:text-xs text-sky-soft mb-2.5 sm:mb-4 shadow-sm"
           >
@@ -677,13 +699,17 @@ function handleLeaveLobby() {
           >
             <span class="sm:hidden">
               Decide together.<br />
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end"
+              >
                 Drop coins to vote.
               </span>
             </span>
             <span class="hidden sm:inline">
               Group decisions made fun.<br />
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end"
+              >
                 Just drop your coins.
               </span>
             </span>
@@ -763,7 +789,13 @@ function handleLeaveLobby() {
                   <!-- Quick Topic Chips -->
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <button
-                      v-for="(sug, idx) in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
+                      v-for="(sug, idx) in [
+                        'Hotpot 🍲',
+                        'BBQ 🍢',
+                        'Movie 🍿',
+                        'Trip 🚗',
+                        'Boardgames 🎲',
+                      ]"
                       :key="sug"
                       type="button"
                       :class="[
@@ -920,7 +952,11 @@ function handleLeaveLobby() {
           class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted"
         >
           <div class="flex items-center gap-2">
-            <span class="text-sm">🪙</span>
+            <img
+              src="/logo-mark.png"
+              alt="CoinDrop"
+              class="w-4 h-4 object-contain inline-block shrink-0"
+            />
             <span class="font-bold text-text-primary">CoinDrop</span>
             <span class="text-line">•</span>
             <span class="sm:hidden">Multiplayer decisions</span>
