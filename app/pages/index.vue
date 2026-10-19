@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Sparkles, Plus, ArrowRight, Coins, Trophy, Users, Lightbulb } from 'lucide-vue-next'
 import type { CardIdea, CoinType, EnrichedCardIdea } from '~/types'
 import { useIdentity } from '~/composables/useIdentity'
@@ -54,6 +54,56 @@ const {
 
 // Local state for landing inputs & loading
 const landingTab = ref<'create' | 'join'>('create')
+const slideDirection = ref<'slide-left' | 'slide-right'>('slide-left')
+const cardInnerRef = ref<HTMLElement | null>(null)
+const cardHeight = ref<number | null>(null)
+let cardResizeObserver: ResizeObserver | null = null
+
+function setLandingTab(tab: 'create' | 'join') {
+  if (landingTab.value === tab) return
+  slideDirection.value = tab === 'join' ? 'slide-left' : 'slide-right'
+  landingTab.value = tab
+}
+
+function handleTransitionEnter() {
+  if (cardInnerRef.value) {
+    const height = cardInnerRef.value.offsetHeight
+    if (height > 100) {
+      cardHeight.value = Math.round(height) + 2
+    }
+  }
+}
+
+watch(
+  cardInnerRef,
+  el => {
+    if (cardResizeObserver) {
+      cardResizeObserver.disconnect()
+      cardResizeObserver = null
+    }
+    if (el && typeof ResizeObserver !== 'undefined') {
+      cardResizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const target = entry.target as HTMLElement
+          const height = target.offsetHeight || entry.contentRect.height
+          if (height > 100) {
+            cardHeight.value = Math.round(height) + 2
+          }
+        }
+      })
+      cardResizeObserver.observe(el)
+    }
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  if (cardResizeObserver) {
+    cardResizeObserver.disconnect()
+    cardResizeObserver = null
+  }
+})
+
 const newRoomTitle = ref('')
 const joinRoomCode = ref('')
 const isJoining = ref(false)
@@ -615,115 +665,123 @@ function handleLeaveLobby() {
 
         <!-- Unified Single Card with Segmented Toggle -->
         <div class="max-w-md mx-auto w-full mb-8">
-          <!-- Segmented Tab Switcher -->
+          <!-- Segmented Tab Switcher with Apple-grade Sliding Indicator -->
           <div
-            class="flex items-center p-1 rounded-2xl bg-[#121a2b] border border-[#25314a] mb-4 sm:mb-5 shadow-lg"
+            class="relative flex items-center p-1 rounded-2xl bg-[#121a2b] border border-[#25314a] mb-4 sm:mb-5 shadow-lg select-none"
           >
+            <!-- Apple-style Sliding Indicator Pill -->
+            <div
+              class="absolute top-1 bottom-1 rounded-xl bg-sky-gradient shadow-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none"
+              :style="{
+                left: landingTab === 'create' ? '4px' : 'calc(50% + 2px)',
+                width: 'calc(50% - 6px)',
+              }"
+            />
+
             <button
               type="button"
-              :class="[
-                'flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5',
-                landingTab === 'create'
-                  ? 'bg-sky-gradient text-[#0b1220] shadow-md'
-                  : 'text-[#8fa3c4] hover:text-[#eaf2ff]',
-              ]"
-              @click="landingTab = 'create'"
+              class="relative z-10 flex-1 py-2 text-xs font-bold rounded-xl transition-colors duration-250 cursor-pointer flex items-center justify-center gap-1.5"
+              :class="
+                landingTab === 'create' ? 'text-[#0b1220]' : 'text-[#8fa3c4] hover:text-[#eaf2ff]'
+              "
+              @click="setLandingTab('create')"
             >
               <Plus class="w-3.5 h-3.5" />
               <span>Create Lobby</span>
             </button>
             <button
               type="button"
-              :class="[
-                'flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5',
-                landingTab === 'join'
-                  ? 'bg-sky-gradient text-[#0b1220] shadow-md'
-                  : 'text-[#8fa3c4] hover:text-[#eaf2ff]',
-              ]"
-              @click="landingTab = 'join'"
+              class="relative z-10 flex-1 py-2 text-xs font-bold rounded-xl transition-colors duration-250 cursor-pointer flex items-center justify-center gap-1.5"
+              :class="
+                landingTab === 'join' ? 'text-[#0b1220]' : 'text-[#8fa3c4] hover:text-[#eaf2ff]'
+              "
+              @click="setLandingTab('join')"
             >
               <Users class="w-3.5 h-3.5" />
               <span>Join with Code</span>
             </button>
           </div>
 
-          <!-- Main Interactive Card -->
+          <!-- Main Interactive Card with Apple-grade Box Morphing -->
           <div
-            class="p-4 sm:p-6 rounded-[20px] bg-[#121a2b] border border-[#25314a] shadow-2xl relative transition-all"
+            class="box-morph overflow-hidden rounded-[20px] bg-[#121a2b] border border-[#25314a] shadow-2xl relative"
+            :style="cardHeight ? { height: `${cardHeight}px` } : undefined"
           >
-            <Transition name="tab-fade" mode="out-in">
-              <!-- 1. CREATE TAB -->
-              <div v-if="landingTab === 'create'" key="create" class="space-y-4">
-                <div>
-                  <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
-                    What are you deciding?
-                  </label>
-                  <input
-                    v-model="newRoomTitle"
-                    type="text"
-                    placeholder="e.g. Friday Night Hotpot 🍲"
-                    class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
-                    @keydown.enter="handleCreateLobby"
-                  />
-                </div>
+            <div ref="cardInnerRef" class="p-4 sm:p-6">
+              <Transition :name="slideDirection" mode="out-in" @enter="handleTransitionEnter">
+                <!-- 1. CREATE TAB -->
+                <div v-if="landingTab === 'create'" key="create" class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                      What are you deciding?
+                    </label>
+                    <input
+                      v-model="newRoomTitle"
+                      type="text"
+                      placeholder="e.g. Friday Night Hotpot 🍲"
+                      class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                      @keydown.enter="handleCreateLobby"
+                    />
+                  </div>
 
-                <!-- Quick Topic Chips -->
-                <div class="flex items-center gap-1.5 flex-wrap">
+                  <!-- Quick Topic Chips -->
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
+                      :key="sug"
+                      type="button"
+                      class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer active:scale-95"
+                      @click="newRoomTitle = sug"
+                    >
+                      {{ sug }}
+                    </button>
+                  </div>
+
                   <button
-                    v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
-                    :key="sug"
                     type="button"
-                    class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer active:scale-95"
-                    @click="newRoomTitle = sug"
+                    class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
+                    @click="handleCreateLobby"
                   >
-                    {{ sug }}
+                    <span>Create Lobby & Drop Coins</span>
+                    <ArrowRight class="w-4 h-4" />
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
-                  @click="handleCreateLobby"
-                >
-                  <span>Create Lobby & Drop Coins</span>
-                  <ArrowRight class="w-4 h-4" />
-                </button>
-              </div>
+                <!-- 2. JOIN TAB -->
+                <div v-else key="join" class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                      Enter 4-Digit Room Code
+                    </label>
+                    <input
+                      v-model="joinRoomCode"
+                      type="text"
+                      placeholder="e.g. 2785 or DROP-2785"
+                      class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                      @keydown.enter="handleJoinLobby"
+                    />
+                    <p class="text-[11px] text-[#8fa3c4] mt-1.5">
+                      Tip: Or just tap the invite link sent to you in Telegram.
+                    </p>
+                  </div>
 
-              <!-- 2. JOIN TAB -->
-              <div v-else key="join" class="space-y-4">
-                <div>
-                  <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
-                    Enter 4-Digit Room Code
-                  </label>
-                  <input
-                    v-model="joinRoomCode"
-                    type="text"
-                    placeholder="e.g. 2785 or DROP-2785"
-                    class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
-                    @keydown.enter="handleJoinLobby"
-                  />
-                  <p class="text-[11px] text-[#8fa3c4] mt-1.5">
-                    Tip: Or just tap the invite link sent to you in Telegram.
-                  </p>
+                  <button
+                    type="button"
+                    :disabled="!joinRoomCode.trim()"
+                    :class="[
+                      'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
+                      joinRoomCode.trim()
+                        ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
+                        : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
+                    ]"
+                    @click="handleJoinLobby"
+                  >
+                    <span>Join Lobby</span>
+                    <ArrowRight class="w-4 h-4" />
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  :disabled="!joinRoomCode.trim()"
-                  :class="[
-                    'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
-                    joinRoomCode.trim()
-                      ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
-                      : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
-                  ]"
-                  @click="handleJoinLobby"
-                >
-                  <span>Join Lobby</span>
-                  <ArrowRight class="w-4 h-4" />
-                </button>
-              </div>
-            </Transition>
+              </Transition>
+            </div>
           </div>
 
           <!-- Recent Lobbies (if any) -->
