@@ -295,14 +295,14 @@ async function handleRecentLobbyClick(roomId: string) {
 async function handleEndLobby() {
   if (
     !confirm(
-      'Are you sure you want to end this lobby? All card ideas and votes will be permanently deleted from the database.',
+      'Are you sure you want to close this lobby? All cards and votes will be permanently cleared for all participants.',
     )
   ) {
     return
   }
   await endLobbyAndClearData()
   router.replace({ query: {} })
-  showToast('Lobby ended and all data deleted. 🗑️')
+  showToast('Lobby closed and cleared. ✨')
 }
 
 // Open modal to add idea
@@ -417,7 +417,6 @@ function handleLeaveLobby() {
         :current-user="identity || { id: '', name: 'Guest', emoji: '🦫' }"
         :is-connected="isConnected"
         :is-host="isHost"
-        :is-database-connected="isSupabaseConfigured"
         @change-phase="phase => changePhase(phase)"
         @reset-votes="resetVotes"
         @leave="handleLeaveLobby"
@@ -639,11 +638,12 @@ function handleLeaveLobby() {
         <!-- Hero Header -->
         <div class="text-center mb-6 sm:mb-10">
           <div
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121a2b] border border-[#25314a] text-[11px] sm:text-xs text-[#d0ebff] mb-3 sm:mb-4 shadow-sm"
+            class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#121a2b] border border-[#25314a] text-[11px] sm:text-xs text-[#d0ebff] mb-3 sm:mb-4 shadow-sm"
           >
             <span class="w-2 h-2 rounded-full bg-[#3fb950] animate-pulse shrink-0" />
-            <span v-if="isSupabaseConfigured">⚡ Supabase Realtime Connected</span>
-            <span v-else>Zero signup • Live multiplayer • Instant drop</span>
+            <span class="font-medium tracking-wide"
+              >Live Multiplayer Decision Lounge • No Signup Required</span
+            >
           </div>
 
           <h1
@@ -805,7 +805,86 @@ function handleLeaveLobby() {
             </div>
           </div>
         </div>
+
+        <!-- How It Works (3-Step Micro Guide for Real Product Experience) -->
+        <div
+          class="w-full max-w-2xl mx-auto mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-[#25314a]/60"
+        >
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
+            <div
+              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+            >
+              <div
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+              >
+                1
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Invite in 1-Click</h4>
+                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                  Share the 4-digit code or direct Telegram link with friends.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+            >
+              <div
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+              >
+                2
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Pitch Card Ideas</h4>
+                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                  Everyone adds food spots, movies, or activities to the board.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+            >
+              <div
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+              >
+                3
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Drop Coins & Decide</h4>
+                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                  Vote in real-time with gold and red coins. Watch the winner emerge!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+
+      <!-- Real Product Clean Footer -->
+      <footer
+        class="w-full border-t border-[#25314a]/60 py-5 sm:py-6 px-4 mt-auto relative z-10 text-center"
+      >
+        <div
+          class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-[#8fa3c4]"
+        >
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🪙</span>
+            <span class="font-bold text-[#eaf2ff]">CoinDrop</span>
+            <span class="text-[#25314a]">•</span>
+            <span>Zero-signup multiplayer decision lounge</span>
+          </div>
+          <div class="flex items-center gap-3 text-[11px]">
+            <span class="flex items-center gap-1 text-[#3fb950]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#3fb950] animate-pulse" />
+              <span>Realtime</span>
+            </span>
+            <span class="text-[#25314a]">•</span>
+            <span>Ephemeral • Auto-clears on close</span>
+          </div>
+        </div>
+      </footer>
     </template>
 
     <!-- Modals with Clean Spring Transitions -->

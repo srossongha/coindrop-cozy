@@ -23,7 +23,6 @@ const props = defineProps<{
   currentUser: Identity
   isConnected: boolean
   isHost: boolean
-  isDatabaseConnected?: boolean
 }>()
 
 const emit = defineEmits<{
