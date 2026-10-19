@@ -1,5 +1,12 @@
 import { createClient, type SupabaseClient, type RealtimeChannel } from '@supabase/supabase-js'
-import type { CardIdea, CoinType, LobbyPhase, LobbyRoom, UserIdentity } from '~/types'
+import type {
+  CardIdea,
+  CoinType,
+  LobbyPhase,
+  LobbyRoom,
+  LobbyWsMessage,
+  UserIdentity,
+} from '~/types'
 
 const DEFAULT_SUPABASE_URL = 'https://dblccfthkkdzsfydngaa.supabase.co'
 const DEFAULT_SUPABASE_KEY =
@@ -254,6 +261,9 @@ export function useSupabase() {
       onIdeaChange?: (type: 'INSERT' | 'UPDATE' | 'DELETE', idea: Record<string, unknown>) => void
       onVoteChange?: (vote: Record<string, unknown>) => void
       onDropBroadcast?: (data: { cardId: string; coinType: CoinType; userId: string }) => void
+      onLobbyMessage?: (msg: LobbyWsMessage) => void
+      onPresenceSync?: (users: UserIdentity[]) => void
+      onConnected?: () => void
       onLobbyDeleted?: () => void
     },
   ) {
@@ -272,7 +282,38 @@ export function useSupabase() {
       },
     })
 
-    // Listen to Supabase Realtime Postgres Changes
+    // 1. Listen to Supabase Realtime Broadcast Messages (Instant global WebSocket dispatch)
+    channel
+      .on('broadcast', { event: 'lobby_msg' }, ({ payload }) => {
+        if (payload) {
+          callbacks.onLobbyMessage?.(payload as LobbyWsMessage)
+        }
+      })
+      .on('broadcast', { event: 'coin_drop' }, ({ payload }) => {
+        callbacks.onDropBroadcast?.(
+          payload as { cardId: string; coinType: CoinType; userId: string },
+        )
+      })
+
+    // 2. Track Presence (Who is currently active in the lobby)
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState()
+      const users: UserIdentity[] = []
+      for (const presences of Object.values(state)) {
+        for (const raw of presences as Array<{ id?: string; name?: string; emoji?: string }>) {
+          if (raw.id && !users.some(u => u.id === raw.id)) {
+            users.push({
+              id: raw.id,
+              name: raw.name || 'Friend',
+              emoji: raw.emoji || '🦫',
+            })
+          }
+        }
+      }
+      callbacks.onPresenceSync?.(users)
+    })
+
+    // 3. Fallback: Listen to Supabase Postgres CDC Changes
     channel
       .on(
         'postgres_changes',
@@ -317,15 +358,11 @@ export function useSupabase() {
           callbacks.onVoteChange?.(payload.new as Record<string, unknown>)
         },
       )
-      .on('broadcast', { event: 'coin_drop' }, ({ payload }) => {
-        callbacks.onDropBroadcast?.(
-          payload as { cardId: string; coinType: CoinType; userId: string },
-        )
-      })
 
     channel.subscribe(status => {
       if (status === 'SUBSCRIBED') {
-        // Track presence
+        callbacks.onConnected?.()
+        // Announce presence
         channel.track({
           id: currentUser.id,
           name: currentUser.name,
@@ -337,6 +374,16 @@ export function useSupabase() {
 
     activeChannel = channel
     return channel
+  }
+
+  // Broadcast a message to all connected peers in the lobby via Supabase Realtime WebSockets
+  function broadcastLobbyMessage(msg: LobbyWsMessage) {
+    if (!activeChannel) return
+    activeChannel.send({
+      type: 'broadcast',
+      event: 'lobby_msg',
+      payload: msg,
+    })
   }
 
   function broadcastCoinDrop(roomId: string, cardId: string, coinType: CoinType, userId: string) {
@@ -367,6 +414,7 @@ export function useSupabase() {
     deleteRoom,
     cleanupExpiredLobbies,
     subscribeToLobby,
+    broadcastLobbyMessage,
     broadcastCoinDrop,
     unsubscribe,
   }

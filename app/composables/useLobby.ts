@@ -90,6 +90,21 @@ export function useLobby() {
     if (!supabase.isConfigured.value) return
 
     supabase.subscribeToLobby(roomId, user, {
+      onConnected() {
+        isConnected.value = true
+      },
+      onLobbyMessage(msg) {
+        handleIncomingMessage(msg)
+      },
+      onPresenceSync(users) {
+        if (!currentRoom.value || currentRoom.value.id !== roomId) return
+        for (const u of users) {
+          if (!currentRoom.value.participants.some(p => p.id === u.id)) {
+            currentRoom.value.participants.push(u)
+          }
+        }
+        persistRoom(currentRoom.value)
+      },
       onLobbyChange(lobby) {
         if (!currentRoom.value || currentRoom.value.id !== roomId) return
         if (lobby.phase) {
@@ -254,12 +269,17 @@ export function useLobby() {
   }
 
   function sendWsMessage(msg: LobbyWsMessage) {
-    // 1. Send via WebSocket if open
+    // 1. Broadcast globally via Supabase Realtime WebSockets to all devices & players
+    if (supabase.isConfigured.value) {
+      supabase.broadcastLobbyMessage(msg)
+    }
+
+    // 2. Send via native WebSocket if open
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(msg))
     }
 
-    // 2. Broadcast across tabs via BroadcastChannel
+    // 3. Broadcast across tabs via BroadcastChannel
     if (broadcastChannel) {
       try {
         broadcastChannel.postMessage(msg)
@@ -474,6 +494,11 @@ export function useLobby() {
         saveRecentRoom(remoteRoom)
         connectSocket(cleanId, user)
         setupSupabaseRealtime(cleanId, user)
+        sendWsMessage({
+          type: 'USER_JOINED',
+          roomId: cleanId,
+          payload: { user },
+        })
         return { success: true }
       }
     }
