@@ -57,6 +57,7 @@ const {
   removeCoin,
   changePhase,
   resetVotes,
+  setupSupabaseRealtime,
 } = useLobby()
 
 // Local state for landing inputs & loading
@@ -110,6 +111,10 @@ onMounted(async () => {
       showToast(`Lobby #${targetRoom} was not found or has expired.`)
       router.replace({ query: {} })
     }
+  } else if (currentRoom.value) {
+    // If room is already active in local state, connect Supabase Realtime channel
+    setupSupabaseRealtime(currentRoom.value.id, user)
+    router.replace({ query: { room: currentRoom.value.id } })
   }
 })
 
@@ -120,6 +125,7 @@ async function handleCreateLobby() {
   const room = await createLobby(newRoomTitle.value, user)
   isJoining.value = false
   newRoomTitle.value = ''
+  router.replace({ query: { room: room.id } })
   showToast(`Created lobby ${room.id}! Share with friends.`)
 }
 
@@ -133,6 +139,7 @@ async function handleJoinLobby() {
   isJoining.value = false
   if (result.success) {
     joinRoomCode.value = ''
+    router.replace({ query: { room: code } })
     showToast(`Joined lobby ${code}!`)
   } else {
     showToast(`Lobby ${code} was not found or has expired.`)
@@ -144,7 +151,9 @@ async function handleRecentLobbyClick(roomId: string) {
   isJoining.value = true
   const result = await joinLobby(roomId, user)
   isJoining.value = false
-  if (!result.success) {
+  if (result.success) {
+    router.replace({ query: { room: roomId } })
+  } else {
     showToast(`Lobby #${roomId} is expired or no longer exists.`)
   }
 }

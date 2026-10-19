@@ -122,13 +122,25 @@ export function useSupabase() {
         phase: lobbyData.phase as LobbyPhase,
         winnerCardId: lobbyData.winner_card_id,
         ideas,
-        participants: [
-          {
-            id: lobbyData.creator_id,
-            name: lobbyData.creator_name,
-            emoji: lobbyData.creator_emoji,
-          },
-        ],
+        participants: (() => {
+          const list: UserIdentity[] = [
+            {
+              id: lobbyData.creator_id,
+              name: lobbyData.creator_name,
+              emoji: lobbyData.creator_emoji,
+            },
+          ]
+          for (const idea of ideas) {
+            if (!list.some(p => p.id === idea.authorId)) {
+              list.push({
+                id: idea.authorId,
+                name: idea.authorName,
+                emoji: idea.authorEmoji,
+              })
+            }
+          }
+          return list
+        })(),
       }
 
       return room
@@ -264,6 +276,7 @@ export function useSupabase() {
       onLobbyMessage?: (msg: LobbyWsMessage) => void
       onPresenceSync?: (users: UserIdentity[]) => void
       onConnected?: () => void
+      onDisconnected?: () => void
       onLobbyDeleted?: () => void
     },
   ) {
@@ -286,6 +299,7 @@ export function useSupabase() {
     channel
       .on('broadcast', { event: 'lobby_msg' }, ({ payload }) => {
         if (payload) {
+          console.log('[CoinDrop Realtime] Incoming broadcast:', (payload as LobbyWsMessage).type)
           callbacks.onLobbyMessage?.(payload as LobbyWsMessage)
         }
       })
@@ -360,6 +374,7 @@ export function useSupabase() {
       )
 
     channel.subscribe(status => {
+      console.log('[CoinDrop Realtime] Channel status:', status, 'for room:', roomId)
       if (status === 'SUBSCRIBED') {
         callbacks.onConnected?.()
         // Announce presence
@@ -369,6 +384,8 @@ export function useSupabase() {
           emoji: currentUser.emoji,
           onlineAt: new Date().toISOString(),
         })
+      } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+        callbacks.onDisconnected?.()
       }
     })
 
@@ -378,7 +395,11 @@ export function useSupabase() {
 
   // Broadcast a message to all connected peers in the lobby via Supabase Realtime WebSockets
   function broadcastLobbyMessage(msg: LobbyWsMessage) {
-    if (!activeChannel) return
+    if (!activeChannel) {
+      console.warn('[CoinDrop Realtime] Cannot broadcast, activeChannel is null')
+      return
+    }
+    console.log('[CoinDrop Realtime] Outgoing broadcast:', msg.type, msg.roomId)
     activeChannel.send({
       type: 'broadcast',
       event: 'lobby_msg',

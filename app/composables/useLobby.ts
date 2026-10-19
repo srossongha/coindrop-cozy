@@ -81,9 +81,7 @@ export function useLobby() {
   // Supabase real-time database client
   const supabase = useSupabase()
 
-  let socket: WebSocket | null = null
   let broadcastChannel: BroadcastChannel | null = null
-  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
   // Setup Supabase Realtime synchronization
   function setupSupabaseRealtime(roomId: string, user: Identity) {
@@ -92,6 +90,11 @@ export function useLobby() {
     supabase.subscribeToLobby(roomId, user, {
       onConnected() {
         isConnected.value = true
+        console.log('[useLobby] Realtime WebSockets connected and live for lobby:', roomId)
+      },
+      onDisconnected() {
+        isConnected.value = false
+        console.warn('[useLobby] Realtime WebSockets disconnected for lobby:', roomId)
       },
       onLobbyMessage(msg) {
         handleIncomingMessage(msg)
@@ -205,11 +208,10 @@ export function useLobby() {
     }
   }
 
-  // Connect to WebSocket and BroadcastChannel
-  function connectSocket(roomId: string, user: Identity) {
+  // Connect to BroadcastChannel for local same-browser cross-tab sync
+  function connectSocket(roomId: string) {
     if (!import.meta.client) return
 
-    // Setup BroadcastChannel for instant same-browser cross-tab sync
     if (typeof BroadcastChannel !== 'undefined') {
       try {
         if (broadcastChannel) broadcastChannel.close()
@@ -221,51 +223,6 @@ export function useLobby() {
         console.warn('[useLobby] BroadcastChannel error:', e)
       }
     }
-
-    // Setup native WebSocket connection to Nitro server
-    function setupWs() {
-      try {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-        const wsUrl = `${protocol}//${window.location.host}/api/ws`
-        socket = new WebSocket(wsUrl)
-
-        socket.onopen = () => {
-          isConnected.value = true
-          // Subscribe to this room
-          sendWsMessage({
-            type: 'JOIN_LOBBY',
-            roomId,
-            payload: { user },
-          })
-        }
-
-        socket.onmessage = event => {
-          try {
-            const data = JSON.parse(event.data)
-            handleIncomingMessage(data)
-          } catch {
-            /* ignore */
-          }
-        }
-
-        socket.onclose = () => {
-          isConnected.value = false
-          // Auto reconnect after delay if still on same room
-          if (currentRoom.value && currentRoom.value.id === roomId) {
-            clearTimeout(reconnectTimer)
-            reconnectTimer = setTimeout(setupWs, 3000)
-          }
-        }
-
-        socket.onerror = () => {
-          isConnected.value = false
-        }
-      } catch (err) {
-        console.warn('[useLobby] WebSocket init error:', err)
-      }
-    }
-
-    setupWs()
   }
 
   function sendWsMessage(msg: LobbyWsMessage) {
@@ -274,12 +231,7 @@ export function useLobby() {
       supabase.broadcastLobbyMessage(msg)
     }
 
-    // 2. Send via native WebSocket if open
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify(msg))
-    }
-
-    // 3. Broadcast across tabs via BroadcastChannel
+    // 2. Broadcast across tabs in the same browser via BroadcastChannel
     if (broadcastChannel) {
       try {
         broadcastChannel.postMessage(msg)
@@ -457,7 +409,7 @@ export function useLobby() {
     currentRoom.value = newRoom
     persistRoom(newRoom)
     saveRecentRoom(newRoom)
-    connectSocket(roomId, user)
+    connectSocket(roomId)
 
     if (supabase.isConfigured.value) {
       await supabase.saveLobby(newRoom)
@@ -492,7 +444,7 @@ export function useLobby() {
         currentRoom.value = remoteRoom
         persistRoom(remoteRoom)
         saveRecentRoom(remoteRoom)
-        connectSocket(cleanId, user)
+        connectSocket(cleanId)
         setupSupabaseRealtime(cleanId, user)
         sendWsMessage({
           type: 'USER_JOINED',
@@ -523,7 +475,7 @@ export function useLobby() {
       currentRoom.value = foundRoom
       persistRoom(foundRoom)
       saveRecentRoom(foundRoom)
-      connectSocket(cleanId, user)
+      connectSocket(cleanId)
       return { success: true }
     }
 
@@ -567,15 +519,12 @@ export function useLobby() {
   }
 
   function leaveLobby() {
-    if (socket) {
-      socket.close()
-      socket = null
-    }
     if (broadcastChannel) {
       broadcastChannel.close()
       broadcastChannel = null
     }
     supabase.unsubscribe()
+    isConnected.value = false
     currentRoom.value = null
   }
 
@@ -875,5 +824,6 @@ export function useLobby() {
     removeCoin,
     changePhase,
     resetVotes,
+    setupSupabaseRealtime,
   }
 }
