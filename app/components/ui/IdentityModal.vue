@@ -64,7 +64,7 @@ function handleSave() {
     class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4"
   >
     <div
-      class="w-full max-w-md bg-[#121a2b] border border-[#25314a] rounded-[16px] p-6 shadow-2xl relative animate-in fade-in"
+      class="modal-dialog w-full max-w-md bg-[#121a2b] border border-[#25314a] rounded-[20px] p-6 shadow-2xl relative"
     >
       <!-- Close button (only if not mandatory first-join) -->
       <button

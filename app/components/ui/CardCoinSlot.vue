@@ -23,7 +23,15 @@ interface FallingCoin {
   startX: number
 }
 
+interface FloatingScore {
+  id: number
+  text: string
+  color: string
+}
+
 const fallingCoins = ref<FallingCoin[]>([])
+const floatingScores = ref<FloatingScore[]>([])
+const isBumping = ref(false)
 
 // Watch for drop events on this card to trigger visual falling animation
 watch(
@@ -39,6 +47,23 @@ function triggerDropAnimation(type: CoinType) {
   const id = Date.now() + Math.random()
   const startX = (Math.random() - 0.5) * 36
   fallingCoins.value.push({ id, type, startX })
+
+  // Subtle physical recoil / impact bump on the card slot
+  isBumping.value = true
+  setTimeout(() => {
+    isBumping.value = false
+  }, 350)
+
+  // Floating +1 / +2 particle feedback
+  const scoreId = Date.now() + Math.random()
+  floatingScores.value.push({
+    id: scoreId,
+    text: type === 'gold' ? '+1 🪙' : '+2 🔴',
+    color: type === 'gold' ? 'text-[#f5c242]' : 'text-[#ef4444]',
+  })
+  setTimeout(() => {
+    floatingScores.value = floatingScores.value.filter(s => s.id !== scoreId)
+  }, 1000)
 
   setTimeout(() => {
     fallingCoins.value = fallingCoins.value.filter(c => c.id !== id)
@@ -65,8 +90,27 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
   <div class="relative flex flex-col items-center w-full mt-2">
     <!-- Coin Hopper & Physics Slot Area -->
     <div
-      class="w-full relative py-2.5 px-3 rounded-xl bg-[#0b1220]/70 border border-[#25314a] overflow-hidden flex flex-col items-center justify-center transition-all duration-300 group-hover:border-[#74b9ff]/40 shadow-inner min-h-[46px]"
+      :class="[
+        'w-full relative py-2.5 px-3 rounded-xl bg-[#0b1220]/70 border border-[#25314a] overflow-hidden flex flex-col items-center justify-center transition-all duration-300 group-hover:border-[#74b9ff]/40 shadow-inner min-h-[46px]',
+        isBumping ? 'animate-card-bump' : '',
+      ]"
     >
+      <!-- Floating Score Feedback Layer -->
+      <div
+        class="absolute inset-0 pointer-events-none overflow-hidden z-30 flex items-center justify-center"
+      >
+        <div
+          v-for="score in floatingScores"
+          :key="score.id"
+          :class="[
+            'absolute font-black text-sm drop-shadow-lg animate-float-score select-none pointer-events-none',
+            score.color,
+          ]"
+        >
+          {{ score.text }}
+        </div>
+      </div>
+
       <!-- Falling Coins Physics Layer -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden z-20">
         <TransitionGroup name="coin-fall">
@@ -106,7 +150,7 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
               <div
                 v-for="n in visibleGoldTokens"
                 :key="'g-' + n"
-                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#d49e1a] to-[#ffeaa7] border border-[#f5c242] flex items-center justify-center text-[8px] shadow-sm"
+                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#d49e1a] to-[#ffeaa7] border border-[#f5c242] flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
               >
                 🪙
               </div>
@@ -127,7 +171,7 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
               <div
                 v-for="n in visibleRedTokens"
                 :key="'r-' + n"
-                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#b91c1c] to-[#ff8787] border border-[#ef4444] flex items-center justify-center text-[8px] shadow-sm"
+                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#b91c1c] to-[#ff8787] border border-[#ef4444] flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
               >
                 🔴
               </div>

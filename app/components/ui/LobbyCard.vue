@@ -37,10 +37,10 @@ function getSafeLink(url?: string): string {
     :class="[
       'relative rounded-[16px] p-5 flex flex-col justify-between transition-all duration-300 group',
       isWinner
-        ? 'bg-[#121a2b] p-[2px] rounded-[16px] bg-sky-gradient shadow-2xl shadow-[#74b9ff]/25 scale-[1.02]'
+        ? 'bg-[#121a2b] p-[2px] rounded-[16px] bg-sky-gradient shadow-2xl shadow-[#74b9ff]/30 scale-[1.02] animate-pulse-glow'
         : card.isLeader && !isFinishedPhase
-          ? 'bg-[#121a2b] border-2 border-[#74b9ff]/60 shadow-sky-glow'
-          : 'bg-[#121a2b] border border-[#25314a] hover:border-[#d0ebff]/40 hover:shadow-sky-glow',
+          ? 'bg-[#121a2b] border-2 border-[#74b9ff]/60 shadow-sky-glow hover:-translate-y-1'
+          : 'bg-[#121a2b] border border-[#25314a] hover:border-[#74b9ff]/60 hover:shadow-sky-glow hover:-translate-y-1',
     ]"
   >
     <!-- Inner container for gradient border wrapper when winning -->

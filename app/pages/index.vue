@@ -334,24 +334,28 @@ function handleLeaveLobby() {
     />
 
     <!-- Global Toast Notification -->
-    <div
-      v-if="toastMessage"
-      class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#121a2b] border border-[#74b9ff]/60 text-[#d0ebff] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in"
-    >
-      <Sparkles class="w-4 h-4 text-[#74b9ff] shrink-0" />
-      <span>{{ toastMessage }}</span>
-    </div>
+    <Transition name="modal">
+      <div
+        v-if="toastMessage"
+        class="modal-dialog fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#121a2b] border border-[#74b9ff]/60 text-[#d0ebff] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold shadow-sky-glow"
+      >
+        <Sparkles class="w-4 h-4 text-[#74b9ff] shrink-0" />
+        <span>{{ toastMessage }}</span>
+      </div>
+    </Transition>
 
     <!-- Join Loading Overlay -->
-    <div
-      v-if="isJoining"
-      class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 animate-in fade-in"
-    >
+    <Transition name="modal">
       <div
-        class="w-10 h-10 border-3 border-[#74b9ff] border-t-transparent rounded-full animate-spin"
-      />
-      <p class="text-xs font-semibold text-[#d0ebff]">Connecting to lobby...</p>
-    </div>
+        v-if="isJoining"
+        class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3"
+      >
+        <div
+          class="w-10 h-10 border-3 border-[#74b9ff] border-t-transparent rounded-full animate-spin"
+        />
+        <p class="text-xs font-semibold text-[#d0ebff]">Connecting to lobby...</p>
+      </div>
+    </Transition>
 
     <!-- =================================================== -->
     <!-- SCENARIO A: ACTIVE LOBBY VIEW                       -->
@@ -429,35 +433,44 @@ function handleLeaveLobby() {
         </div>
 
         <!-- Finished Phase Winner Podium Banner -->
-        <div
-          v-if="currentRoom.phase === 'finished' && winningCard"
-          class="mb-8 p-6 rounded-[16px] bg-[#121a2b] border-2 border-[#74b9ff] shadow-2xl shadow-[#74b9ff]/20 text-center relative overflow-hidden"
-        >
+        <Transition name="modal">
           <div
-            class="inline-flex items-center justify-center p-3 rounded-2xl bg-sky-gradient text-[#0b1220] mb-3 shadow-lg"
+            v-if="currentRoom.phase === 'finished' && winningCard"
+            class="modal-dialog mb-8 p-6 sm:p-8 rounded-[20px] bg-gradient-to-b from-[#121a2b] to-[#0b1220] border-2 border-[#74b9ff] shadow-2xl shadow-[#74b9ff]/25 text-center relative overflow-hidden animate-pulse-glow"
           >
-            <Trophy class="w-8 h-8" />
-          </div>
-          <h2 class="text-xl sm:text-2xl font-black text-[#eaf2ff] mb-1">
-            Winning Decision: {{ winningCard.title }}!
-          </h2>
-          <p class="text-xs sm:text-sm text-[#8fa3c4] max-w-md mx-auto mb-3">
-            Winner with
-            <span class="text-[#74b9ff] font-bold">{{ winningCard.totalScore }} total points</span>
-            ({{ winningCard.totalGold }} Gold 🪙, {{ winningCard.totalRed }} Red 🔴)!
-          </p>
-          <div class="flex items-center justify-center gap-2">
-            <span
-              class="text-xs px-3 py-1 rounded-full bg-[#0b1220] border border-[#25314a] text-[#8fa3c4]"
-            >
-              Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}
-            </span>
-          </div>
-        </div>
+            <!-- Background Shimmer Sheen -->
+            <div class="absolute inset-0 animate-winner-shimmer pointer-events-none" />
 
-        <!-- Cards Grid -->
-        <div
+            <div
+              class="inline-flex items-center justify-center p-3.5 rounded-2xl bg-sky-gradient text-[#0b1220] mb-3 shadow-lg shadow-[#74b9ff]/40 animate-trophy-wiggle relative z-10"
+            >
+              <Trophy class="w-8 h-8" />
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-[#eaf2ff] mb-1 relative z-10">
+              Winning Decision: {{ winningCard.title }}!
+            </h2>
+            <p class="text-xs sm:text-sm text-[#8fa3c4] max-w-md mx-auto mb-3 relative z-10">
+              Winner with
+              <span class="text-[#74b9ff] font-bold"
+                >{{ winningCard.totalScore }} total points</span
+              >
+              ({{ winningCard.totalGold }} Gold 🪙, {{ winningCard.totalRed }} Red 🔴)!
+            </p>
+            <div class="flex items-center justify-center gap-2 relative z-10">
+              <span
+                class="text-xs px-3 py-1 rounded-full bg-[#0b1220] border border-[#25314a] text-[#8fa3c4]"
+              >
+                Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}
+              </span>
+            </div>
+          </div>
+        </Transition>
+
+        <!-- Cards Grid with Smooth FLIP Animations -->
+        <TransitionGroup
           v-if="enrichedIdeas.length > 0"
+          name="card-flip"
+          tag="div"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
           <LobbyCard
@@ -476,7 +489,7 @@ function handleLeaveLobby() {
             @remove-coin="(cardId, type) => handleRemoveCoin(cardId, type)"
             @edit-card="c => handleOpenEditIdea(c)"
           />
-        </div>
+        </TransitionGroup>
 
         <!-- Empty State if no cards added yet -->
         <div
@@ -626,77 +639,79 @@ function handleLeaveLobby() {
           <div
             class="p-6 rounded-[20px] bg-[#121a2b] border border-[#25314a] shadow-2xl relative transition-all"
           >
-            <!-- 1. CREATE TAB -->
-            <div v-if="landingTab === 'create'" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
-                  What are you deciding?
-                </label>
-                <input
-                  v-model="newRoomTitle"
-                  type="text"
-                  placeholder="e.g. Friday Night Hotpot 🍲"
-                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
-                  @keydown.enter="handleCreateLobby"
-                />
-              </div>
+            <Transition name="tab-fade" mode="out-in">
+              <!-- 1. CREATE TAB -->
+              <div v-if="landingTab === 'create'" key="create" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                    What are you deciding?
+                  </label>
+                  <input
+                    v-model="newRoomTitle"
+                    type="text"
+                    placeholder="e.g. Friday Night Hotpot 🍲"
+                    class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                    @keydown.enter="handleCreateLobby"
+                  />
+                </div>
 
-              <!-- Quick Topic Chips -->
-              <div class="flex items-center gap-1.5 flex-wrap">
+                <!-- Quick Topic Chips -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
+                    :key="sug"
+                    type="button"
+                    class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer active:scale-95"
+                    @click="newRoomTitle = sug"
+                  >
+                    {{ sug }}
+                  </button>
+                </div>
+
                 <button
-                  v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
-                  :key="sug"
                   type="button"
-                  class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer"
-                  @click="newRoomTitle = sug"
+                  class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
+                  @click="handleCreateLobby"
                 >
-                  {{ sug }}
+                  <span>Create Lobby & Drop Coins</span>
+                  <ArrowRight class="w-4 h-4" />
                 </button>
               </div>
 
-              <button
-                type="button"
-                class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
-                @click="handleCreateLobby"
-              >
-                <span>Create Lobby & Drop Coins</span>
-                <ArrowRight class="w-4 h-4" />
-              </button>
-            </div>
+              <!-- 2. JOIN TAB -->
+              <div v-else key="join" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                    Enter 4-Digit Room Code
+                  </label>
+                  <input
+                    v-model="joinRoomCode"
+                    type="text"
+                    placeholder="e.g. 2785 or DROP-2785"
+                    class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                    @keydown.enter="handleJoinLobby"
+                  />
+                  <p class="text-[11px] text-[#8fa3c4] mt-1.5">
+                    Tip: Or just tap the invite link sent to you in Telegram.
+                  </p>
+                </div>
 
-            <!-- 2. JOIN TAB -->
-            <div v-else class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
-                  Enter 4-Digit Room Code
-                </label>
-                <input
-                  v-model="joinRoomCode"
-                  type="text"
-                  placeholder="e.g. 2785 or DROP-2785"
-                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
-                  @keydown.enter="handleJoinLobby"
-                />
-                <p class="text-[11px] text-[#8fa3c4] mt-1.5">
-                  Tip: Or just tap the invite link sent to you in Telegram.
-                </p>
+                <button
+                  type="button"
+                  :disabled="!joinRoomCode.trim()"
+                  :class="[
+                    'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
+                    joinRoomCode.trim()
+                      ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
+                      : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
+                  ]"
+                  @click="handleJoinLobby"
+                >
+                  <span>Join Lobby</span>
+                  <ArrowRight class="w-4 h-4" />
+                </button>
               </div>
-
-              <button
-                type="button"
-                :disabled="!joinRoomCode.trim()"
-                :class="[
-                  'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
-                  joinRoomCode.trim()
-                    ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
-                    : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
-                ]"
-                @click="handleJoinLobby"
-              >
-                <span>Join Lobby</span>
-                <ArrowRight class="w-4 h-4" />
-              </button>
-            </div>
+            </Transition>
           </div>
 
           <!-- Recent Lobbies (if any) -->
@@ -723,25 +738,29 @@ function handleLeaveLobby() {
       </main>
     </template>
 
-    <!-- Modals -->
+    <!-- Modals with Clean Spring Transitions -->
     <!-- 1. Persona Customizer Modal -->
-    <IdentityModal
-      v-if="showIdentityModal"
-      :is-mandatory="isIdentityMandatory"
-      :title="identityModalTitle"
-      :description="identityModalDescription"
-      @save="handleIdentitySaved"
-      @close="showIdentityModal = false"
-    />
+    <Transition name="modal">
+      <IdentityModal
+        v-if="showIdentityModal"
+        :is-mandatory="isIdentityMandatory"
+        :title="identityModalTitle"
+        :description="identityModalDescription"
+        @save="handleIdentitySaved"
+        @close="showIdentityModal = false"
+      />
+    </Transition>
 
     <!-- 2. Propose or Edit Card Idea Modal -->
-    <CreateIdeaModal
-      v-if="showIdeaModal"
-      :existing-idea="editingIdea"
-      :is-host="isHost"
-      @submit="handleSaveIdea"
-      @delete="handleDeleteIdea"
-      @close="showIdeaModal = false"
-    />
+    <Transition name="modal">
+      <CreateIdeaModal
+        v-if="showIdeaModal"
+        :existing-idea="editingIdea"
+        :is-host="isHost"
+        @submit="handleSaveIdea"
+        @delete="handleDeleteIdea"
+        @close="showIdeaModal = false"
+      />
+    </Transition>
   </div>
 </template>

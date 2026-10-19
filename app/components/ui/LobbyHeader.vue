@@ -223,41 +223,43 @@ function handleEditIdentityFromRoster() {
             </button>
 
             <!-- Dropdown Menu -->
-            <div
-              v-if="showHostMenu"
-              class="absolute right-0 mt-2 w-48 bg-[#121a2b] border border-[#25314a] rounded-xl shadow-2xl py-1 z-50 animate-in fade-in"
-            >
-              <button
-                v-if="room.phase === 'voting'"
-                type="button"
-                class="w-full px-3.5 py-2 text-left text-xs text-[#d0ebff] hover:bg-[#25314a] flex items-center gap-2 cursor-pointer transition-colors"
-                @click="handleResetVotes"
+            <Transition name="dropdown-slide">
+              <div
+                v-if="showHostMenu"
+                class="absolute right-0 mt-2 w-48 bg-[#121a2b] border border-[#25314a] rounded-xl shadow-2xl py-1 z-50 origin-top-right"
               >
-                <RotateCcw class="w-3.5 h-3.5 text-[#f5c242]" />
-                <span>Reset All Votes</span>
-              </button>
+                <button
+                  v-if="room.phase === 'voting'"
+                  type="button"
+                  class="w-full px-3.5 py-2 text-left text-xs text-[#d0ebff] hover:bg-[#25314a] flex items-center gap-2 cursor-pointer transition-colors"
+                  @click="handleResetVotes"
+                >
+                  <RotateCcw class="w-3.5 h-3.5 text-[#f5c242]" />
+                  <span>Reset All Votes</span>
+                </button>
 
-              <button
-                v-if="room.phase === 'finished'"
-                type="button"
-                class="w-full px-3.5 py-2 text-left text-xs text-[#74b9ff] hover:bg-[#25314a] flex items-center gap-2 cursor-pointer transition-colors"
-                @click="handleReopenVoting"
-              >
-                <RotateCcw class="w-3.5 h-3.5" />
-                <span>Reopen Voting</span>
-              </button>
+                <button
+                  v-if="room.phase === 'finished'"
+                  type="button"
+                  class="w-full px-3.5 py-2 text-left text-xs text-[#74b9ff] hover:bg-[#25314a] flex items-center gap-2 cursor-pointer transition-colors"
+                  @click="handleReopenVoting"
+                >
+                  <RotateCcw class="w-3.5 h-3.5" />
+                  <span>Reopen Voting</span>
+                </button>
 
-              <div class="h-px bg-[#25314a] my-1" />
+                <div class="h-px bg-[#25314a] my-1" />
 
-              <button
-                type="button"
-                class="w-full px-3.5 py-2 text-left text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 cursor-pointer transition-colors"
-                @click="handleEndAndClear"
-              >
-                <Trash2 class="w-3.5 h-3.5" />
-                <span>End & Delete Lobby</span>
-              </button>
-            </div>
+                <button
+                  type="button"
+                  class="w-full px-3.5 py-2 text-left text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 cursor-pointer transition-colors"
+                  @click="handleEndAndClear"
+                >
+                  <Trash2 class="w-3.5 h-3.5" />
+                  <span>End & Delete Lobby</span>
+                </button>
+              </div>
+            </Transition>
           </div>
         </template>
       </div>
@@ -269,148 +271,152 @@ function handleEditIdentityFromRoster() {
     <!-- ============================================== -->
     <!-- UNIFIED SHARE & INVITE MODAL                    -->
     <!-- ============================================== -->
-    <div
-      v-if="showShareModal"
-      class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
-    >
+    <Transition name="modal">
       <div
-        class="w-full max-w-sm bg-[#121a2b] border border-[#25314a] rounded-[20px] p-5 shadow-2xl relative"
+        v-if="showShareModal"
+        class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4"
       >
-        <button
-          type="button"
-          class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] cursor-pointer"
-          @click="showShareModal = false"
-        >
-          <X class="w-5 h-5" />
-        </button>
-
-        <div class="flex items-center gap-2.5 mb-3">
-          <div
-            class="w-9 h-9 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff]"
-          >
-            <Share2 class="w-4 h-4" />
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-[#eaf2ff]">Invite Friends</h3>
-            <p class="text-[11px] text-[#8fa3c4]">Zero signup required to join</p>
-          </div>
-        </div>
-
-        <!-- Room Code Box -->
         <div
-          class="p-3 rounded-xl bg-[#0b1220] border border-[#25314a] mb-4 flex items-center justify-between"
+          class="modal-dialog w-full max-w-sm bg-[#121a2b] border border-[#25314a] rounded-[20px] p-5 shadow-2xl relative"
         >
-          <div>
-            <span class="text-[10px] uppercase font-bold text-[#8fa3c4] block">Lobby Code</span>
-            <span class="font-mono text-base font-black text-[#74b9ff] tracking-wider">{{
-              room.id
-            }}</span>
+          <button
+            type="button"
+            class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] cursor-pointer"
+            @click="showShareModal = false"
+          >
+            <X class="w-5 h-5" />
+          </button>
+
+          <div class="flex items-center gap-2.5 mb-3">
+            <div
+              class="w-9 h-9 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff]"
+            >
+              <Share2 class="w-4 h-4" />
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-[#eaf2ff]">Invite Friends</h3>
+              <p class="text-[11px] text-[#8fa3c4]">Zero signup required to join</p>
+            </div>
           </div>
-          <button
-            type="button"
-            class="px-3 py-1.5 rounded-lg bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs font-semibold text-[#d0ebff] flex items-center gap-1.5 cursor-pointer transition-colors"
-            @click="copyCode"
-          >
-            <Check v-if="copiedCode" class="w-3.5 h-3.5 text-[#3fb950]" />
-            <Copy v-else class="w-3.5 h-3.5 opacity-70" />
-            <span>{{ copiedCode ? 'Copied' : 'Copy' }}</span>
-          </button>
-        </div>
 
-        <!-- Main Actions -->
-        <div class="space-y-2 mb-2">
-          <!-- Telegram -->
-          <button
-            type="button"
-            class="w-full py-2.5 px-4 rounded-xl bg-[#229ed9] hover:bg-[#229ed9]/90 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
-            @click="shareTelegram"
+          <!-- Room Code Box -->
+          <div
+            class="p-3 rounded-xl bg-[#0b1220] border border-[#25314a] mb-4 flex items-center justify-between"
           >
-            <Send class="w-4 h-4" />
-            <span>Share to Telegram</span>
-          </button>
+            <div>
+              <span class="text-[10px] uppercase font-bold text-[#8fa3c4] block">Lobby Code</span>
+              <span class="font-mono text-base font-black text-[#74b9ff] tracking-wider">{{
+                room.id
+              }}</span>
+            </div>
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-lg bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs font-semibold text-[#d0ebff] flex items-center gap-1.5 cursor-pointer transition-colors"
+              @click="copyCode"
+            >
+              <Check v-if="copiedCode" class="w-3.5 h-3.5 text-[#3fb950]" />
+              <Copy v-else class="w-3.5 h-3.5 opacity-70" />
+              <span>{{ copiedCode ? 'Copied' : 'Copy' }}</span>
+            </button>
+          </div>
 
-          <!-- Copy Direct Link -->
-          <button
-            type="button"
-            class="w-full py-2.5 px-4 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#d0ebff] font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
-            @click="copyLink"
-          >
-            <Check v-if="copiedLink" class="w-4 h-4 text-[#3fb950]" />
-            <Copy v-else class="w-4 h-4 text-[#74b9ff]" />
-            <span>{{ copiedLink ? 'Copied Link!' : 'Copy Direct Link' }}</span>
-          </button>
+          <!-- Main Actions -->
+          <div class="space-y-2 mb-2">
+            <!-- Telegram -->
+            <button
+              type="button"
+              class="w-full py-2.5 px-4 rounded-xl bg-[#229ed9] hover:bg-[#229ed9]/90 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              @click="shareTelegram"
+            >
+              <Send class="w-4 h-4" />
+              <span>Share to Telegram</span>
+            </button>
+
+            <!-- Copy Direct Link -->
+            <button
+              type="button"
+              class="w-full py-2.5 px-4 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#d0ebff] font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+              @click="copyLink"
+            >
+              <Check v-if="copiedLink" class="w-4 h-4 text-[#3fb950]" />
+              <Copy v-else class="w-4 h-4 text-[#74b9ff]" />
+              <span>{{ copiedLink ? 'Copied Link!' : 'Copy Direct Link' }}</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- ============================================== -->
     <!-- UNIFIED ROSTER & PERSONA MODAL                 -->
     <!-- ============================================== -->
-    <div
-      v-if="showRosterModal"
-      class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in"
-    >
+    <Transition name="modal">
       <div
-        class="w-full max-w-sm bg-[#121a2b] border border-[#25314a] rounded-[20px] p-5 shadow-2xl relative"
+        v-if="showRosterModal"
+        class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4"
       >
-        <button
-          type="button"
-          class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] cursor-pointer"
-          @click="showRosterModal = false"
-        >
-          <X class="w-5 h-5" />
-        </button>
-
-        <h3 class="text-sm font-bold text-[#eaf2ff] mb-3 flex items-center gap-2">
-          <Users class="w-4 h-4 text-[#74b9ff]" />
-          <span>Friends in Lobby ({{ room.participants.length }})</span>
-        </h3>
-
-        <!-- Your Persona Card with Edit Button -->
         <div
-          class="p-3 rounded-xl bg-[#0b1220] border border-[#74b9ff]/40 mb-3 flex items-center justify-between"
+          class="modal-dialog w-full max-w-sm bg-[#121a2b] border border-[#25314a] rounded-[20px] p-5 shadow-2xl relative"
         >
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">{{ currentUser.emoji }}</span>
-            <div>
-              <div class="text-xs font-bold text-[#eaf2ff] flex items-center gap-1">
-                <span>{{ currentUser.name }}</span>
-                <span class="text-[10px] text-[#74b9ff] font-normal">(you)</span>
-              </div>
-              <span class="text-[10px] text-[#8fa3c4]">Tap to change name or mascot</span>
-            </div>
-          </div>
           <button
             type="button"
-            class="px-2.5 py-1 rounded-lg bg-sky-gradient text-[#0b1220] text-xs font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-            @click="handleEditIdentityFromRoster"
+            class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] cursor-pointer"
+            @click="showRosterModal = false"
           >
-            <Edit3 class="w-3 h-3" />
-            <span>Edit</span>
+            <X class="w-5 h-5" />
           </button>
-        </div>
 
-        <!-- Participants List -->
-        <div class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+          <h3 class="text-sm font-bold text-[#eaf2ff] mb-3 flex items-center gap-2">
+            <Users class="w-4 h-4 text-[#74b9ff]" />
+            <span>Friends in Lobby ({{ room.participants.length }})</span>
+          </h3>
+
+          <!-- Your Persona Card with Edit Button -->
           <div
-            v-for="p in room.participants"
-            :key="p.id"
-            class="flex items-center justify-between p-2 rounded-lg bg-[#0b1220]/50 border border-[#25314a]/60 text-xs"
+            class="p-3 rounded-xl bg-[#0b1220] border border-[#74b9ff]/40 mb-3 flex items-center justify-between"
           >
-            <div class="flex items-center gap-2">
-              <span class="text-base">{{ p.emoji }}</span>
-              <span class="font-medium text-[#eaf2ff]">{{ p.name }}</span>
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">{{ currentUser.emoji }}</span>
+              <div>
+                <div class="text-xs font-bold text-[#eaf2ff] flex items-center gap-1">
+                  <span>{{ currentUser.name }}</span>
+                  <span class="text-[10px] text-[#74b9ff] font-normal">(you)</span>
+                </div>
+                <span class="text-[10px] text-[#8fa3c4]">Tap to change name or mascot</span>
+              </div>
             </div>
-            <span
-              v-if="p.id === room.creatorId"
-              class="text-[10px] font-bold text-[#f5c242] flex items-center gap-1"
+            <button
+              type="button"
+              class="px-2.5 py-1 rounded-lg bg-sky-gradient text-[#0b1220] text-xs font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+              @click="handleEditIdentityFromRoster"
             >
-              <Crown class="w-3 h-3" />
-              <span>Host</span>
-            </span>
+              <Edit3 class="w-3 h-3" />
+              <span>Edit</span>
+            </button>
+          </div>
+
+          <!-- Participants List -->
+          <div class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+            <div
+              v-for="p in room.participants"
+              :key="p.id"
+              class="flex items-center justify-between p-2 rounded-lg bg-[#0b1220]/50 border border-[#25314a]/60 text-xs"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-base">{{ p.emoji }}</span>
+                <span class="font-medium text-[#eaf2ff]">{{ p.name }}</span>
+              </div>
+              <span
+                v-if="p.id === room.creatorId"
+                class="text-[10px] font-bold text-[#f5c242] flex items-center gap-1"
+              >
+                <Crown class="w-3 h-3" />
+                <span>Host</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </header>
 </template>
