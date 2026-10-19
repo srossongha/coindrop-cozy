@@ -23,6 +23,13 @@ const emit = defineEmits<{
 const canEdit = computed(() => {
   return !props.isFinishedPhase && (props.isHost || props.card.authorId === props.currentUser.id)
 })
+
+function getSafeLink(url?: string): string {
+  if (!url) return '#'
+  const trimmed = url.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return 'https://' + trimmed
+}
 </script>
 
 <template>
@@ -107,7 +114,7 @@ const canEdit = computed(() => {
 
           <a
             v-if="card.link"
-            :href="card.link"
+            :href="getSafeLink(card.link)"
             target="_blank"
             rel="noopener noreferrer"
             class="text-[#74b9ff] hover:text-[#d0ebff] hover:underline flex items-center gap-1"

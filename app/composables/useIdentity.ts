@@ -32,9 +32,26 @@ export const EMOJI_OPTIONS = [
 ]
 
 const STORAGE_KEY = 'coindrop:identity'
+const CUSTOMIZED_KEY = 'coindrop:identity_customized'
 
 export function useIdentity() {
   const identity = useState<Identity | null>('identity', () => null)
+  const isCustomized = useState<boolean>('identity_customized', () => false)
+
+  function hasDefinedSelf(): boolean {
+    if (!import.meta.client) return false
+    return localStorage.getItem(CUSTOMIZED_KEY) === 'true'
+  }
+
+  function markDefinedSelf() {
+    if (!import.meta.client) return
+    try {
+      localStorage.setItem(CUSTOMIZED_KEY, 'true')
+    } catch {
+      /* ignore */
+    }
+    isCustomized.value = true
+  }
 
   function init(): Identity {
     if (!import.meta.client) {
@@ -45,6 +62,10 @@ export function useIdentity() {
           emoji: '🦫',
         }
       )
+    }
+
+    if (hasDefinedSelf()) {
+      isCustomized.value = true
     }
 
     try {
@@ -109,6 +130,8 @@ export function useIdentity() {
       emoji: emoji.trim() || identity.value.emoji,
     }
 
+    markDefinedSelf()
+
     if (import.meta.client) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(identity.value))
@@ -120,8 +143,11 @@ export function useIdentity() {
 
   return {
     identity,
+    isCustomized,
     init,
     updateIdentity,
+    hasDefinedSelf,
+    markDefinedSelf,
     personas: DEFAULT_PERSONAS,
     emojiOptions: EMOJI_OPTIONS,
   }

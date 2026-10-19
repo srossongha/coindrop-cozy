@@ -266,8 +266,18 @@ export function useLobby() {
 
       case 'USER_JOINED': {
         const user = payload.user
-        if (user && !currentRoom.value.participants.some(p => p.id === user.id)) {
-          currentRoom.value.participants.push(user)
+        if (user) {
+          const idx = currentRoom.value.participants.findIndex(p => p.id === user.id)
+          if (idx !== -1) {
+            currentRoom.value.participants[idx].name = user.name
+            currentRoom.value.participants[idx].emoji = user.emoji
+          } else {
+            currentRoom.value.participants.push(user)
+          }
+          if (currentRoom.value.creatorId === user.id) {
+            currentRoom.value.creatorName = user.name
+            currentRoom.value.creatorEmoji = user.emoji
+          }
           persistRoom(currentRoom.value)
         }
         break
@@ -796,8 +806,42 @@ export function useLobby() {
       }
     }
 
-    return mapped.sort((a, b) => b.totalScore - a.totalScore)
+    if (currentRoom.value.phase === 'finished') {
+      return mapped.sort((a, b) => b.totalScore - a.totalScore)
+    }
+    // Stable order during ideas & voting: keep by createdAt to prevent jarring shifts
+    return mapped.sort((a, b) => a.createdAt - b.createdAt)
   })
+
+  // Update participant persona in current room and announce to all peers
+  function updateParticipantIdentity(user: Identity) {
+    if (!currentRoom.value) return
+
+    const idx = currentRoom.value.participants.findIndex(p => p.id === user.id)
+    if (idx !== -1) {
+      currentRoom.value.participants[idx].name = user.name
+      currentRoom.value.participants[idx].emoji = user.emoji
+    } else {
+      currentRoom.value.participants.push({ id: user.id, name: user.name, emoji: user.emoji })
+    }
+
+    if (currentRoom.value.creatorId === user.id) {
+      currentRoom.value.creatorName = user.name
+      currentRoom.value.creatorEmoji = user.emoji
+      if (supabase.isConfigured.value) {
+        supabase.saveLobby(currentRoom.value)
+      }
+    }
+
+    persistRoom(currentRoom.value)
+
+    sendWsMessage({
+      type: 'USER_JOINED',
+      roomId: currentRoom.value.id,
+      payload: { user, room: currentRoom.value },
+      senderId: user.id,
+    })
+  }
 
   return {
     currentRoom,
@@ -825,5 +869,6 @@ export function useLobby() {
     changePhase,
     resetVotes,
     setupSupabaseRealtime,
+    updateParticipantIdentity,
   }
 }

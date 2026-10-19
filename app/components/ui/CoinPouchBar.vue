@@ -8,6 +8,10 @@ defineProps<{
   maxGold?: number
   maxRed?: number
 }>()
+
+const emit = defineEmits<{
+  (e: 'editIdentity'): void
+}>()
 </script>
 
 <template>
@@ -16,9 +20,14 @@ defineProps<{
       class="max-w-2xl mx-auto pointer-events-auto bg-[#121a2b]/95 backdrop-blur-xl border border-[#25314a] rounded-[16px] px-4 py-3 shadow-2xl flex items-center justify-between gap-4 transition-all hover:border-[#74b9ff]/40 shadow-sky-glow"
     >
       <!-- User Persona & Remaining Summary -->
-      <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="flex items-center gap-3 text-left cursor-pointer group"
+        title="Click to edit your persona"
+        @click="emit('editIdentity')"
+      >
         <div
-          class="w-10 h-10 rounded-xl bg-[#0b1220] border border-[#25314a] flex items-center justify-center text-xl shrink-0"
+          class="w-10 h-10 rounded-xl bg-[#0b1220] border border-[#25314a] group-hover:border-[#74b9ff]/50 flex items-center justify-center text-xl shrink-0 transition-colors"
         >
           {{ user.emoji }}
         </div>
@@ -27,13 +36,17 @@ defineProps<{
             <span class="text-xs font-bold uppercase tracking-wider text-[#d0ebff]">
               Your Coin Pouch
             </span>
-            <span class="text-xs font-medium text-[#8fa3c4]"> ({{ user.name }}) </span>
+            <span
+              class="text-xs font-medium text-[#8fa3c4] group-hover:text-[#74b9ff] transition-colors"
+            >
+              ({{ user.name }})
+            </span>
           </div>
           <p class="text-[11px] text-[#8fa3c4] hidden sm:block">
             5 Gold Coins (1 pt) & 2 Red Coins (2 pts). Drop them onto your top choices!
           </p>
         </div>
-      </div>
+      </button>
 
       <!-- Coin Pockets -->
       <div class="flex items-center gap-3 shrink-0">

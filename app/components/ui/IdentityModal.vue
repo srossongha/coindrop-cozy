@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { X, Sparkles, Check, Shuffle } from 'lucide-vue-next'
 import { useIdentity, DEFAULT_PERSONAS, EMOJI_OPTIONS } from '~/composables/useIdentity'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     isMandatory?: boolean
     title?: string
@@ -25,6 +25,23 @@ const { identity, updateIdentity } = useIdentity()
 
 const currentEmoji = ref(identity.value?.emoji || '🦫')
 const currentName = ref(identity.value?.name || 'Chill Capybara')
+
+onMounted(() => {
+  if (identity.value) {
+    currentEmoji.value = identity.value.emoji
+    currentName.value = identity.value.name
+  }
+})
+
+watch(
+  () => identity.value,
+  newId => {
+    if (newId) {
+      currentEmoji.value = newId.emoji
+      currentName.value = newId.name
+    }
+  },
+)
 
 function pickRandomPersona() {
   const p = DEFAULT_PERSONAS[Math.floor(Math.random() * DEFAULT_PERSONAS.length)]
@@ -137,7 +154,7 @@ function handleSave() {
         @click="handleSave"
       >
         <Check class="w-4 h-4" />
-        <span>Ready to Join Lobby</span>
+        <span>{{ props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨' }}</span>
       </button>
     </div>
   </div>

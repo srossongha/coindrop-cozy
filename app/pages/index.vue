@@ -33,7 +33,7 @@ useHead({
 const route = useRoute()
 const router = useRouter()
 
-const { identity, init: initIdentity } = useIdentity()
+const { identity, init: initIdentity, hasDefinedSelf } = useIdentity()
 const {
   currentRoom,
   isConnected,
@@ -58,6 +58,7 @@ const {
   changePhase,
   resetVotes,
   setupSupabaseRealtime,
+  updateParticipantIdentity,
 } = useLobby()
 
 // Local state for landing inputs & loading
@@ -66,9 +67,17 @@ const joinRoomCode = ref('')
 const isJoining = ref(false)
 const toastMessage = ref<string | null>(null)
 
+// Pending actions for first-time persona onboarding
+const pendingRoomCode = ref<string | null>(null)
+const pendingAction = ref<'join' | 'create' | null>(null)
+
 // Modal states
 const showIdentityModal = ref(false)
 const isIdentityMandatory = ref(false)
+const identityModalTitle = ref('Choose Your Persona')
+const identityModalDescription = ref(
+  'Zero signup needed! Pick your nickname and cute emoji to join the decision lobby.',
+)
 const showIdeaModal = ref(false)
 const editingIdea = ref<CardIdea | null>(null)
 
@@ -91,6 +100,47 @@ function showToast(msg: string) {
   }, 2600)
 }
 
+function handleOpenEditIdentity() {
+  isIdentityMandatory.value = false
+  identityModalTitle.value = 'Update Your Persona'
+  identityModalDescription.value = 'Change your nickname or cute mascot emoji anytime!'
+  showIdentityModal.value = true
+}
+
+async function handleIdentitySaved() {
+  showIdentityModal.value = false
+  const user = identity.value || initIdentity()
+
+  // 1. If currently inside a lobby, update persona across participants & broadcast
+  if (currentRoom.value) {
+    updateParticipantIdentity(user)
+    showToast(`Updated persona to ${user.emoji} ${user.name}! ✨`)
+  }
+
+  // 2. If there was a pending join action, execute it now
+  if (pendingAction.value === 'join' && pendingRoomCode.value) {
+    const target = pendingRoomCode.value
+    pendingRoomCode.value = null
+    pendingAction.value = null
+    isIdentityMandatory.value = false
+
+    isJoining.value = true
+    const result = await joinLobby(target, user)
+    isJoining.value = false
+    if (result.success) {
+      router.replace({ query: { room: target } })
+      showToast(`Welcome! Joined lobby: #${target} 🪙`)
+    } else {
+      showToast(`Lobby #${target} was not found or has expired.`)
+      router.replace({ query: {} })
+    }
+  } else if (pendingAction.value === 'create') {
+    pendingAction.value = null
+    isIdentityMandatory.value = false
+    await handleCreateLobby()
+  }
+}
+
 onMounted(async () => {
   // 1. Initialize user persona from localStorage
   const user = initIdentity()
@@ -100,8 +150,21 @@ onMounted(async () => {
   const roomQuery =
     (route.query.room as string) ||
     (window.location.hash ? window.location.hash.replace('#', '') : null)
+
   if (roomQuery && roomQuery.trim()) {
     const targetRoom = roomQuery.trim().toUpperCase()
+
+    // FIRST JOIN ONBOARDING: If user hasn't chosen/defined their persona yet, prompt them first!
+    if (!hasDefinedSelf()) {
+      pendingRoomCode.value = targetRoom
+      pendingAction.value = 'join'
+      isIdentityMandatory.value = true
+      identityModalTitle.value = 'Define Yourself First 🦫'
+      identityModalDescription.value = `You were invited to room #${targetRoom}! Pick your nickname & mascot before joining your friends.`
+      showIdentityModal.value = true
+      return
+    }
+
     isJoining.value = true
     const result = await joinLobby(targetRoom, user)
     isJoining.value = false
@@ -112,7 +175,13 @@ onMounted(async () => {
       router.replace({ query: {} })
     }
   } else if (currentRoom.value) {
-    // If room is already active in local state, connect Supabase Realtime channel
+    // If room is already active in local state, fetch fresh remote state & connect Supabase Realtime channel
+    if (isSupabaseConfigured.value) {
+      const fresh = await useSupabase().fetchRoom(currentRoom.value.id)
+      if (fresh) {
+        currentRoom.value = fresh
+      }
+    }
     setupSupabaseRealtime(currentRoom.value.id, user)
     router.replace({ query: { room: currentRoom.value.id } })
   }
@@ -120,6 +189,16 @@ onMounted(async () => {
 
 // Create lobby handler
 async function handleCreateLobby() {
+  if (!hasDefinedSelf()) {
+    pendingAction.value = 'create'
+    isIdentityMandatory.value = true
+    identityModalTitle.value = 'Define Yourself First 🦫'
+    identityModalDescription.value =
+      'You are creating a new lobby! Choose your host nickname & mascot emoji.'
+    showIdentityModal.value = true
+    return
+  }
+
   const user = identity.value || initIdentity()
   isJoining.value = true
   const room = await createLobby(newRoomTitle.value, user)
@@ -132,8 +211,19 @@ async function handleCreateLobby() {
 // Join lobby handler
 async function handleJoinLobby() {
   if (!joinRoomCode.value.trim()) return
-  const user = identity.value || initIdentity()
   const code = joinRoomCode.value.trim().toUpperCase()
+
+  if (!hasDefinedSelf()) {
+    pendingRoomCode.value = code
+    pendingAction.value = 'join'
+    isIdentityMandatory.value = true
+    identityModalTitle.value = 'Define Yourself First 🦫'
+    identityModalDescription.value = `Joining lobby #${code}! Choose your nickname & mascot emoji.`
+    showIdentityModal.value = true
+    return
+  }
+
+  const user = identity.value || initIdentity()
   isJoining.value = true
   const result = await joinLobby(code, user)
   isJoining.value = false
@@ -284,6 +374,7 @@ function handleLeaveLobby() {
         @reset-votes="resetVotes"
         @leave="handleLeaveLobby"
         @end-and-clear="handleEndLobby"
+        @edit-identity="handleOpenEditIdentity"
         @toast="msg => showToast(msg)"
       />
 
@@ -433,6 +524,7 @@ function handleLeaveLobby() {
         :red-remaining="myRedRemaining"
         :max-gold="MAX_GOLD_COINS"
         :max-red="MAX_RED_COINS"
+        @edit-identity="handleOpenEditIdentity"
       />
     </template>
 
@@ -466,7 +558,7 @@ function handleLeaveLobby() {
           <button
             type="button"
             class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs transition-all cursor-pointer shadow-sm hover:border-[#74b9ff]/40"
-            @click="showIdentityModal = true"
+            @click="handleOpenEditIdentity"
           >
             <span class="text-base">{{ identity?.emoji || '🦫' }}</span>
             <span class="font-semibold text-[#eaf2ff] max-w-[120px] truncate">
@@ -654,7 +746,9 @@ function handleLeaveLobby() {
     <IdentityModal
       v-if="showIdentityModal"
       :is-mandatory="isIdentityMandatory"
-      @save="showIdentityModal = false"
+      :title="identityModalTitle"
+      :description="identityModalDescription"
+      @save="handleIdentitySaved"
       @close="showIdentityModal = false"
     />
 

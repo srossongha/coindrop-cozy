@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'changePhase', phase: LobbyPhase): void
-  (e: 'resetVotes' | 'leave' | 'endAndClear'): void
+  (e: 'resetVotes' | 'leave' | 'endAndClear' | 'editIdentity'): void
   (e: 'toast', message: string): void
 }>()
 
@@ -152,7 +152,21 @@ function shareTelegram() {
 
       <!-- Right: Share Actions & Host Flow Controls -->
       <div class="flex items-center gap-2 flex-wrap">
-        <!-- 1. Copy Link Button -->
+        <!-- 1. Persona Pill / Switcher -->
+        <button
+          type="button"
+          class="px-2.5 py-1.5 rounded-xl bg-[#0b1220] hover:bg-[#25314a] text-[#d0ebff] border border-[#25314a] hover:border-[#74b9ff]/40 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
+          title="Change persona or nickname"
+          @click="emit('editIdentity')"
+        >
+          <span class="text-sm">{{ currentUser.emoji }}</span>
+          <span class="max-w-[80px] sm:max-w-[100px] truncate text-[11px]">{{
+            currentUser.name
+          }}</span>
+          <span class="text-[10px] text-[#74b9ff] hidden sm:inline">Change</span>
+        </button>
+
+        <!-- 2. Copy Link Button -->
         <button
           type="button"
           class="px-3 py-1.5 rounded-xl bg-[#0b1220] hover:bg-[#25314a] text-[#d0ebff] border border-[#25314a] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
@@ -163,7 +177,7 @@ function shareTelegram() {
           <span>{{ copiedLink ? 'Copied Link!' : 'Copy Link' }}</span>
         </button>
 
-        <!-- 2. Share to Telegram Button -->
+        <!-- 3. Share to Telegram Button -->
         <button
           type="button"
           class="px-3 py-1.5 rounded-xl bg-[#229ed9]/15 hover:bg-[#229ed9]/25 text-[#74b9ff] border border-[#229ed9]/30 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
@@ -244,9 +258,25 @@ function shareTelegram() {
           In Lobby:
         </span>
         <div class="flex items-center gap-1.5">
+          <button
+            v-if="p.id === currentUser.id"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#121a2b] hover:bg-[#25314a] border border-[#74b9ff]/50 hover:border-[#74b9ff] text-xs text-[#eaf2ff] shrink-0 transition-all cursor-pointer group"
+            title="Click to edit your persona"
+            @click="emit('editIdentity')"
+          >
+            <span class="text-sm">{{ p.emoji }}</span>
+            <span class="text-[11px] font-medium max-w-[90px] truncate">{{ p.name }}</span>
+            <span
+              v-if="p.id === room.creatorId"
+              class="text-[10px] text-[#f5c242]"
+              title="Room Host"
+              >👑</span
+            >
+            <span class="text-[10px] text-[#74b9ff] group-hover:underline">(you)</span>
+          </button>
           <div
-            v-for="p in room.participants"
-            :key="p.id"
+            v-else
             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#121a2b] border border-[#25314a] text-xs text-[#eaf2ff] shrink-0"
             :title="p.name"
           >
@@ -258,7 +288,6 @@ function shareTelegram() {
               title="Room Host"
               >👑</span
             >
-            <span v-if="p.id === currentUser.id" class="text-[10px] text-[#74b9ff]">(you)</span>
           </div>
         </div>
       </div>

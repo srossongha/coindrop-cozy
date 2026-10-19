@@ -48,6 +48,13 @@ onMounted(() => {
   }
 })
 
+function normalizeUrl(url: string): string {
+  const trimmed = url.trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return 'https://' + trimmed
+}
+
 function handleSubmit() {
   if (!title.value.trim()) return
 
@@ -55,7 +62,7 @@ function handleSubmit() {
     title: title.value.trim(),
     category: category.value,
     priceNote: priceNote.value.trim(),
-    link: link.value.trim(),
+    link: normalizeUrl(link.value),
     description: description.value.trim(),
   })
   emit('close')
