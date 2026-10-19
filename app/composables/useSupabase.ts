@@ -9,6 +9,20 @@ const DEFAULT_SUPABASE_KEY =
 export const LOBBY_TTL_MS = 2 * 60 * 60 * 1000
 
 let activeChannel: RealtimeChannel | null = null
+let cachedClient: SupabaseClient | null = null
+
+function getSupabaseClient(url: string, key: string): SupabaseClient | null {
+  if (cachedClient) return cachedClient
+  try {
+    cachedClient = createClient(url, key, {
+      auth: { persistSession: false },
+    })
+    return cachedClient
+  } catch (err) {
+    console.warn('[useSupabase] Failed to initialize Supabase client:', err)
+    return null
+  }
+}
 
 export function useSupabase() {
   const config = useRuntimeConfig()
@@ -22,16 +36,7 @@ export function useSupabase() {
     return Boolean(supabaseUrl && supabaseKey && supabaseUrl.startsWith('http'))
   })
 
-  const client = useState<SupabaseClient | null>('supabase_client', () => {
-    try {
-      return createClient(supabaseUrl, supabaseKey, {
-        auth: { persistSession: false },
-      })
-    } catch (err) {
-      console.warn('[useSupabase] Failed to initialize Supabase client:', err)
-      return null
-    }
-  })
+  const client = computed(() => getSupabaseClient(supabaseUrl, supabaseKey))
 
   // Fetch full room data (lobby, ideas, and votes) from Supabase
   async function fetchRoom(roomId: string): Promise<LobbyRoom | null> {
