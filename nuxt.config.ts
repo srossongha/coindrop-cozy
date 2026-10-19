@@ -16,6 +16,12 @@ export default defineNuxtConfig({
       websocket: true,
     },
   },
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+      supabaseKey: process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_KEY || '',
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

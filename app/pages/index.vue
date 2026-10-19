@@ -37,6 +37,7 @@ const { identity, init: initIdentity } = useIdentity()
 const {
   currentRoom,
   isConnected,
+  isSupabaseConfigured,
   recentRooms,
   activeDrop,
   myGoldRemaining,
@@ -219,6 +220,7 @@ function handleLeaveLobby() {
         :current-user="identity || { id: '', name: 'Guest', emoji: '🦫' }"
         :is-connected="isConnected"
         :is-host="isHost"
+        :is-database-connected="isSupabaseConfigured"
         @change-phase="phase => changePhase(phase)"
         @reset-votes="resetVotes"
         @leave="handleLeaveLobby"
@@ -425,7 +427,8 @@ function handleLeaveLobby() {
             class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#121a2b] border border-[#25314a] text-xs text-[#d0ebff] mb-4 shadow-sm"
           >
             <span class="w-2 h-2 rounded-full bg-[#3fb950] animate-pulse" />
-            <span>Zero signup • Real-time multiplayer voting</span>
+            <span v-if="isSupabaseConfigured">⚡ Supabase Realtime Database Connected</span>
+            <span v-else>Zero signup • Live multiplayer • Supabase Ready</span>
           </div>
 
           <h1

@@ -18,6 +18,7 @@ const props = defineProps<{
   currentUser: Identity
   isConnected: boolean
   isHost: boolean
+  isDatabaseConnected?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -116,6 +117,14 @@ function shareTelegram() {
             <span class="text-[11px] flex items-center gap-1">
               <Users class="w-3 h-3" />
               <span>{{ room.participants.length }} friends</span>
+            </span>
+
+            <span
+              v-if="isDatabaseConnected"
+              class="text-[10px] text-[#3fb950] bg-[#3fb950]/10 border border-[#3fb950]/30 px-1.5 py-0.5 rounded flex items-center gap-1 font-semibold"
+              title="Persistent PostgreSQL & Realtime"
+            >
+              <span>⚡ Supabase</span>
             </span>
           </div>
         </div>

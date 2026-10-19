@@ -77,9 +77,86 @@ export function useLobby() {
     () => null,
   )
 
+  // Supabase real-time database client
+  const supabase = useSupabase()
+
   let socket: WebSocket | null = null
   let broadcastChannel: BroadcastChannel | null = null
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+
+  // Setup Supabase Realtime synchronization
+  function setupSupabaseRealtime(roomId: string, user: Identity) {
+    if (!supabase.isConfigured.value) return
+
+    supabase.subscribeToLobby(roomId, user, {
+      onLobbyChange(lobby) {
+        if (!currentRoom.value || currentRoom.value.id !== roomId) return
+        if (lobby.phase) {
+          currentRoom.value.phase = lobby.phase as LobbyPhase
+        }
+        if (lobby.winner_card_id !== undefined) {
+          currentRoom.value.winnerCardId = (lobby.winner_card_id as string) || null
+        }
+        persistRoom(currentRoom.value)
+      },
+      onIdeaChange(eventType, idea) {
+        if (!currentRoom.value || currentRoom.value.id !== roomId) return
+        const ideaId = (idea.id as string) || ''
+        if (eventType === 'INSERT') {
+          if (!currentRoom.value.ideas.some(i => i.id === ideaId)) {
+            currentRoom.value.ideas.push({
+              id: ideaId,
+              title: (idea.title as string) || '',
+              category: (idea.category as string) || 'General',
+              description: (idea.description as string) || undefined,
+              priceNote: (idea.price_note as string) || undefined,
+              link: (idea.link as string) || undefined,
+              authorId: (idea.author_id as string) || '',
+              authorName: (idea.author_name as string) || '',
+              authorEmoji: (idea.author_emoji as string) || '🦫',
+              createdAt: new Date((idea.created_at as string) || Date.now()).getTime(),
+              votes: {},
+            })
+            persistRoom(currentRoom.value)
+          }
+        } else if (eventType === 'UPDATE') {
+          const idx = currentRoom.value.ideas.findIndex(i => i.id === ideaId)
+          if (idx !== -1) {
+            currentRoom.value.ideas[idx].title =
+              (idea.title as string) || currentRoom.value.ideas[idx].title
+            currentRoom.value.ideas[idx].category =
+              (idea.category as string) || currentRoom.value.ideas[idx].category
+            currentRoom.value.ideas[idx].description = (idea.description as string) || undefined
+            currentRoom.value.ideas[idx].priceNote = (idea.price_note as string) || undefined
+            currentRoom.value.ideas[idx].link = (idea.link as string) || undefined
+            persistRoom(currentRoom.value)
+          }
+        } else if (eventType === 'DELETE') {
+          currentRoom.value.ideas = currentRoom.value.ideas.filter(i => i.id !== ideaId)
+          persistRoom(currentRoom.value)
+        }
+      },
+      onVoteChange(vote) {
+        if (!currentRoom.value || currentRoom.value.id !== roomId) return
+        const cardId = (vote.card_id as string) || ''
+        const userId = (vote.user_id as string) || ''
+        const gold = (vote.gold_coins as number) || 0
+        const red = (vote.red_coins as number) || 0
+
+        const card = currentRoom.value.ideas.find(i => i.id === cardId)
+        if (card) {
+          card.votes[userId] = { gold, red }
+          persistRoom(currentRoom.value)
+        }
+      },
+      onDropBroadcast(data) {
+        if (data && data.cardId && data.coinType) {
+          activeDrop.value = { cardId: data.cardId, coinType: data.coinType, key: Date.now() }
+          playCoinSound(data.coinType)
+        }
+      },
+    })
+  }
 
   // Load recent lobbies from localStorage
   function loadRecentRooms() {
@@ -380,6 +457,14 @@ export function useLobby() {
     saveRecentRoom(newRoom)
     connectSocket(roomId, user)
 
+    if (supabase.isConfigured.value) {
+      supabase.saveLobby(newRoom)
+      for (const idea of newRoom.ideas) {
+        supabase.saveIdea(idea, newRoom.id)
+      }
+      setupSupabaseRealtime(roomId, user)
+    }
+
     // Announce sync to server
     sendWsMessage({
       type: 'SYNC_ROOM',
@@ -433,6 +518,16 @@ export function useLobby() {
     saveRecentRoom(foundRoom)
     connectSocket(cleanId, user)
 
+    if (supabase.isConfigured.value) {
+      supabase.fetchRoom(cleanId).then(remoteRoom => {
+        if (remoteRoom && currentRoom.value && currentRoom.value.id === cleanId) {
+          currentRoom.value = remoteRoom
+          persistRoom(remoteRoom)
+        }
+      })
+      setupSupabaseRealtime(cleanId, user)
+    }
+
     return true
   }
 
@@ -445,6 +540,7 @@ export function useLobby() {
       broadcastChannel.close()
       broadcastChannel = null
     }
+    supabase.unsubscribe()
     currentRoom.value = null
   }
 
@@ -478,6 +574,10 @@ export function useLobby() {
     currentRoom.value.ideas.push(newIdea)
     persistRoom(currentRoom.value)
 
+    if (supabase.isConfigured.value) {
+      supabase.saveIdea(newIdea, currentRoom.value.id)
+    }
+
     sendWsMessage({
       type: 'ADD_IDEA',
       roomId: currentRoom.value.id,
@@ -494,6 +594,10 @@ export function useLobby() {
       currentRoom.value.ideas[idx] = updatedIdea
       persistRoom(currentRoom.value)
 
+      if (supabase.isConfigured.value) {
+        supabase.saveIdea(updatedIdea, currentRoom.value.id)
+      }
+
       sendWsMessage({
         type: 'UPDATE_IDEA',
         roomId: currentRoom.value.id,
@@ -507,6 +611,10 @@ export function useLobby() {
     if (!currentRoom.value) return
     currentRoom.value.ideas = currentRoom.value.ideas.filter(i => i.id !== ideaId)
     persistRoom(currentRoom.value)
+
+    if (supabase.isConfigured.value) {
+      supabase.removeIdea(ideaId)
+    }
 
     sendWsMessage({
       type: 'DELETE_IDEA',
@@ -538,6 +646,13 @@ export function useLobby() {
     playCoinSound(coinType)
     persistRoom(currentRoom.value)
 
+    if (supabase.isConfigured.value) {
+      const myGold = idea.votes[user.id]?.gold || 0
+      const myRed = idea.votes[user.id]?.red || 0
+      supabase.saveVote(currentRoom.value.id, cardId, user.id, myGold, myRed)
+      supabase.broadcastCoinDrop(currentRoom.value.id, cardId, coinType, user.id)
+    }
+
     sendWsMessage({
       type: 'DROP_COIN',
       roomId: currentRoom.value.id,
@@ -564,6 +679,12 @@ export function useLobby() {
     }
 
     persistRoom(currentRoom.value)
+
+    if (supabase.isConfigured.value) {
+      const myGold = idea.votes[user.id]?.gold || 0
+      const myRed = idea.votes[user.id]?.red || 0
+      supabase.saveVote(currentRoom.value.id, cardId, user.id, myGold, myRed)
+    }
 
     sendWsMessage({
       type: 'REMOVE_COIN',
@@ -598,6 +719,10 @@ export function useLobby() {
 
     persistRoom(currentRoom.value)
 
+    if (supabase.isConfigured.value) {
+      supabase.saveLobby(currentRoom.value)
+    }
+
     sendWsMessage({
       type: 'CHANGE_PHASE',
       roomId: currentRoom.value.id,
@@ -613,6 +738,10 @@ export function useLobby() {
     }
     currentRoom.value.winnerCardId = null
     persistRoom(currentRoom.value)
+
+    if (supabase.isConfigured.value) {
+      supabase.resetVotes(currentRoom.value.id)
+    }
 
     sendWsMessage({
       type: 'RESET_VOTES',
@@ -689,6 +818,7 @@ export function useLobby() {
   return {
     currentRoom,
     isConnected,
+    isSupabaseConfigured: supabase.isConfigured,
     recentRooms,
     activeDrop,
     myGoldRemaining,
