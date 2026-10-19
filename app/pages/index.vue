@@ -1,15 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import {
-  Sparkles,
-  Plus,
-  ArrowRight,
-  History,
-  Coins,
-  Trophy,
-  Users,
-  Lightbulb,
-} from 'lucide-vue-next'
+import { Sparkles, Plus, ArrowRight, Coins, Trophy, Users, Lightbulb } from 'lucide-vue-next'
 import type { CardIdea, CoinType, EnrichedCardIdea } from '~/types'
 import { useIdentity } from '~/composables/useIdentity'
 import { useLobby } from '~/composables/useLobby'
@@ -62,6 +53,7 @@ const {
 } = useLobby()
 
 // Local state for landing inputs & loading
+const landingTab = ref<'create' | 'join'>('create')
 const newRoomTitle = ref('')
 const joinRoomCode = ref('')
 const isJoining = ref(false)
@@ -152,7 +144,8 @@ onMounted(async () => {
     (window.location.hash ? window.location.hash.replace('#', '') : null)
 
   if (roomQuery && roomQuery.trim()) {
-    const targetRoom = roomQuery.trim().toUpperCase()
+    const raw = roomQuery.trim().toUpperCase()
+    const targetRoom = raw.startsWith('DROP-') ? raw : `DROP-${raw}`
 
     // FIRST JOIN ONBOARDING: If user hasn't chosen/defined their persona yet, prompt them first!
     if (!hasDefinedSelf()) {
@@ -211,7 +204,8 @@ async function handleCreateLobby() {
 // Join lobby handler
 async function handleJoinLobby() {
   if (!joinRoomCode.value.trim()) return
-  const code = joinRoomCode.value.trim().toUpperCase()
+  const raw = joinRoomCode.value.trim().toUpperCase()
+  const code = raw.startsWith('DROP-') ? raw : `DROP-${raw}`
 
   if (!hasDefinedSelf()) {
     pendingRoomCode.value = code
@@ -380,14 +374,14 @@ function handleLeaveLobby() {
 
       <!-- Lobby Main Content -->
       <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1 relative z-10 pb-36">
-        <!-- Phase Banner & Instructions -->
+        <!-- Clean Phase Bar & Action -->
         <div
-          class="mb-6 p-4 rounded-[16px] bg-[#121a2b] border border-[#25314a] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          class="mb-6 flex items-center justify-between gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-[#121a2b]/80 border border-[#25314a]"
         >
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5 min-w-0">
             <div
               :class="[
-                'w-10 h-10 rounded-xl flex items-center justify-center text-lg border',
+                'w-8 h-8 rounded-xl flex items-center justify-center text-sm border shrink-0',
                 currentRoom.phase === 'ideas'
                   ? 'bg-[#74b9ff]/15 border-[#74b9ff]/30 text-[#74b9ff]'
                   : currentRoom.phase === 'voting'
@@ -395,49 +389,43 @@ function handleLeaveLobby() {
                     : 'bg-[#3fb950]/15 border-[#3fb950]/30 text-[#3fb950]',
               ]"
             >
-              <Lightbulb v-if="currentRoom.phase === 'ideas'" class="w-5 h-5 text-[#74b9ff]" />
-              <Coins v-else-if="currentRoom.phase === 'voting'" class="w-5 h-5 text-[#f5c242]" />
-              <Trophy v-else class="w-5 h-5 text-[#3fb950]" />
+              <Lightbulb v-if="currentRoom.phase === 'ideas'" class="w-4 h-4 text-[#74b9ff]" />
+              <Coins v-else-if="currentRoom.phase === 'voting'" class="w-4 h-4 text-[#f5c242]" />
+              <Trophy v-else class="w-4 h-4 text-[#3fb950]" />
             </div>
 
-            <div>
-              <h2 class="text-sm font-bold text-[#eaf2ff] flex items-center gap-2">
-                <span v-if="currentRoom.phase === 'ideas'"
-                  >Brainstorming Phase: Suggest Options</span
-                >
-                <span v-else-if="currentRoom.phase === 'voting'"
-                  >Voting Phase: Drop Your Coins!</span
-                >
-                <span v-else>Decided: The Group has Chosen!</span>
-              </h2>
-              <p class="text-xs text-[#8fa3c4]">
-                <span v-if="currentRoom.phase === 'ideas'">
-                  Anyone can click "+ Propose an Option". The creator can adjust details or launch
-                  the vote when ready.
-                </span>
-                <span v-else-if="currentRoom.phase === 'voting'">
-                  Drop your 5 Gold Coins (1 pt) and 2 Red Super Coins (2 pts) into your preferred
-                  cards. Watch them drop live!
-                </span>
-                <span v-else>
-                  Voting concluded! The winning card has been locked with the celebratory sky
-                  gradient border.
-                </span>
-              </p>
+            <div class="min-w-0">
+              <span class="text-xs sm:text-sm font-bold text-[#eaf2ff] block truncate">
+                {{
+                  currentRoom.phase === 'ideas'
+                    ? 'Brainstorming: Suggest options for the group'
+                    : currentRoom.phase === 'voting'
+                      ? 'Live Voting: Tap coins to drop into your favorites'
+                      : 'Voting Concluded: Winning option decided!'
+                }}
+              </span>
+              <span class="text-[11px] text-[#8fa3c4] hidden sm:block">
+                {{
+                  currentRoom.phase === 'ideas'
+                    ? 'Anyone can add cards. The host will start voting when ready.'
+                    : currentRoom.phase === 'voting'
+                      ? '5 Gold coins (1pt) and 2 Red coins (2pt) in your pouch.'
+                      : 'The group choice is highlighted below.'
+                }}
+              </span>
             </div>
           </div>
 
           <!-- Add Idea Button (Always accessible before finish) -->
-          <div v-if="currentRoom.phase !== 'finished'" class="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              class="px-4 py-2 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
-              @click="handleOpenAddIdea"
-            >
-              <Plus class="w-4 h-4" />
-              <span>Propose Option</span>
-            </button>
-          </div>
+          <button
+            v-if="currentRoom.phase !== 'finished'"
+            type="button"
+            class="px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0"
+            @click="handleOpenAddIdea"
+          >
+            <Plus class="w-3.5 h-3.5" />
+            <span>Add Option</span>
+          </button>
         </div>
 
         <!-- Finished Phase Winner Podium Banner -->
@@ -600,142 +588,136 @@ function handleLeaveLobby() {
           </p>
         </div>
 
-        <!-- 2 Main Cards: Create Lobby & Join Lobby -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <!-- 1. CREATE LOBBY CARD -->
+        <!-- Unified Single Card with Segmented Toggle -->
+        <div class="max-w-md mx-auto w-full mb-8">
+          <!-- Segmented Tab Switcher -->
           <div
-            class="p-6 rounded-[16px] bg-[#121a2b] border border-[#25314a] hover:border-[#74b9ff]/40 transition-all duration-300 shadow-xl flex flex-col justify-between group"
+            class="flex items-center p-1 rounded-2xl bg-[#121a2b] border border-[#25314a] mb-5 shadow-lg"
           >
-            <div>
-              <div class="flex items-center gap-2 mb-3">
-                <div
-                  class="w-8 h-8 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff]"
-                >
-                  <Plus class="w-4 h-4" />
-                </div>
-                <h2 class="text-lg font-bold text-[#eaf2ff]">Create a Lobby</h2>
-              </div>
+            <button
+              type="button"
+              :class="[
+                'flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5',
+                landingTab === 'create'
+                  ? 'bg-sky-gradient text-[#0b1220] shadow-md'
+                  : 'text-[#8fa3c4] hover:text-[#eaf2ff]',
+              ]"
+              @click="landingTab = 'create'"
+            >
+              <Plus class="w-3.5 h-3.5" />
+              <span>Create Lobby</span>
+            </button>
+            <button
+              type="button"
+              :class="[
+                'flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5',
+                landingTab === 'join'
+                  ? 'bg-sky-gradient text-[#0b1220] shadow-md'
+                  : 'text-[#8fa3c4] hover:text-[#eaf2ff]',
+              ]"
+              @click="landingTab = 'join'"
+            >
+              <Users class="w-3.5 h-3.5" />
+              <span>Join with Code</span>
+            </button>
+          </div>
 
-              <p class="text-xs text-[#8fa3c4] mb-4">
-                Start a new decision room for your friend group. Share via link or Telegram.
-              </p>
-
-              <div class="space-y-3 mb-4">
+          <!-- Main Interactive Card -->
+          <div
+            class="p-6 rounded-[20px] bg-[#121a2b] border border-[#25314a] shadow-2xl relative transition-all"
+          >
+            <!-- 1. CREATE TAB -->
+            <div v-if="landingTab === 'create'" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                  What are you deciding?
+                </label>
                 <input
                   v-model="newRoomTitle"
                   type="text"
-                  placeholder="e.g. Friday Night Hotpot & Drinks 🍲"
-                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                  placeholder="e.g. Friday Night Hotpot 🍲"
+                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
                   @keydown.enter="handleCreateLobby"
                 />
-
-                <!-- Quick Idea Suggestions -->
-                <div class="flex items-center gap-1.5 flex-wrap text-[11px]">
-                  <span class="text-[#8fa3c4]/70">Quick:</span>
-                  <button
-                    v-for="sug in ['Hotpot 🍲', 'BBQ Grill 🍢', 'Movie 🍿', 'Trip 🚗']"
-                    :key="sug"
-                    type="button"
-                    class="px-2 py-0.5 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] transition-colors cursor-pointer"
-                    @click="newRoomTitle = sug"
-                  >
-                    {{ sug }}
-                  </button>
-                </div>
               </div>
+
+              <!-- Quick Topic Chips -->
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button
+                  v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
+                  :key="sug"
+                  type="button"
+                  class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer"
+                  @click="newRoomTitle = sug"
+                >
+                  {{ sug }}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
+                @click="handleCreateLobby"
+              >
+                <span>Create Lobby & Drop Coins</span>
+                <ArrowRight class="w-4 h-4" />
+              </button>
             </div>
 
-            <button
-              type="button"
-              class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
-              @click="handleCreateLobby"
-            >
-              <span>Create Lobby</span>
-              <ArrowRight class="w-4 h-4" />
-            </button>
-          </div>
-
-          <!-- 2. JOIN LOBBY CARD -->
-          <div
-            class="p-6 rounded-[16px] bg-[#121a2b] border border-[#25314a] hover:border-[#74b9ff]/40 transition-all duration-300 shadow-xl flex flex-col justify-between group"
-          >
-            <div>
-              <div class="flex items-center gap-2 mb-3">
-                <div
-                  class="w-8 h-8 rounded-xl bg-[#f5c242]/15 border border-[#f5c242]/30 flex items-center justify-center text-[#f5c242]"
-                >
-                  <Users class="w-4 h-4" />
-                </div>
-                <h2 class="text-lg font-bold text-[#eaf2ff]">Join Lobby</h2>
-              </div>
-
-              <p class="text-xs text-[#8fa3c4] mb-4">
-                Have a room code from a friend? Enter it below to jump right in.
-              </p>
-
-              <div class="space-y-3 mb-4">
+            <!-- 2. JOIN TAB -->
+            <div v-else class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                  Enter 4-Digit Room Code
+                </label>
                 <input
                   v-model="joinRoomCode"
                   type="text"
-                  placeholder="e.g. DROP-8842"
-                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-xs text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                  placeholder="e.g. 2785 or DROP-2785"
+                  class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-4 py-3 text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
                   @keydown.enter="handleJoinLobby"
                 />
-                <p class="text-[11px] text-[#8fa3c4]/70">
-                  Tip: Or just open the invite link sent to you in Telegram.
+                <p class="text-[11px] text-[#8fa3c4] mt-1.5">
+                  Tip: Or just tap the invite link sent to you in Telegram.
                 </p>
               </div>
+
+              <button
+                type="button"
+                :disabled="!joinRoomCode.trim()"
+                :class="[
+                  'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
+                  joinRoomCode.trim()
+                    ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
+                    : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
+                ]"
+                @click="handleJoinLobby"
+              >
+                <span>Join Lobby</span>
+                <ArrowRight class="w-4 h-4" />
+              </button>
             </div>
-
-            <button
-              type="button"
-              :disabled="!joinRoomCode.trim()"
-              :class="[
-                'w-full py-3 rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
-                joinRoomCode.trim()
-                  ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
-                  : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
-              ]"
-              @click="handleJoinLobby"
-            >
-              <span>Join with Code</span>
-              <ArrowRight class="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <!-- Recent Lobbies (if any exist in localStorage) -->
-        <div
-          v-if="recentRooms.length > 0"
-          class="p-5 rounded-[16px] bg-[#121a2b]/70 border border-[#25314a]"
-        >
-          <div
-            class="flex items-center gap-2 mb-3 text-xs font-bold uppercase tracking-wider text-[#8fa3c4]"
-          >
-            <History class="w-3.5 h-3.5 text-[#74b9ff]" />
-            <span>Recent Lobbies</span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-            <button
-              v-for="r in recentRooms"
-              :key="r.id"
-              type="button"
-              class="p-3 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] hover:border-[#74b9ff]/40 text-left transition-all cursor-pointer flex items-center justify-between group"
-              @click="handleRecentLobbyClick(r.id)"
+          <!-- Recent Lobbies (if any) -->
+          <div v-if="recentRooms.length > 0" class="mt-6 text-center">
+            <span
+              class="text-[11px] font-bold uppercase tracking-wider text-[#8fa3c4]/70 block mb-2"
             >
-              <div class="truncate mr-2">
-                <div class="text-xs font-semibold text-[#eaf2ff] truncate group-hover:text-white">
-                  {{ r.title }}
-                </div>
-                <div class="text-[10px] font-mono text-[#74b9ff]">
-                  {{ r.id }}
-                </div>
-              </div>
-              <ArrowRight
-                class="w-3.5 h-3.5 text-[#8fa3c4] group-hover:text-[#74b9ff] group-hover:translate-x-0.5 transition-all shrink-0"
-              />
-            </button>
+              Recent Rooms
+            </span>
+            <div class="flex items-center justify-center gap-2 flex-wrap">
+              <button
+                v-for="r in recentRooms.slice(0, 4)"
+                :key="r.id"
+                type="button"
+                class="px-3 py-1.5 rounded-full bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs text-[#d0ebff] flex items-center gap-1.5 cursor-pointer transition-colors"
+                @click="handleRecentLobbyClick(r.id)"
+              >
+                <span class="font-medium truncate max-w-[120px]">{{ r.title }}</span>
+                <span class="font-mono text-[10px] text-[#74b9ff]">#{{ r.id }}</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
