@@ -887,29 +887,33 @@ function handleLeaveLobby() {
       </footer>
     </template>
 
-    <!-- Modals with Clean Spring Transitions -->
+    <!-- Modals with Clean Spring Transitions (Teleported to Body) -->
     <!-- 1. Persona Customizer Modal -->
-    <Transition name="modal">
-      <IdentityModal
-        v-if="showIdentityModal"
-        :is-mandatory="isIdentityMandatory"
-        :title="identityModalTitle"
-        :description="identityModalDescription"
-        @save="handleIdentitySaved"
-        @close="showIdentityModal = false"
-      />
-    </Transition>
+    <Teleport to="body">
+      <Transition name="modal">
+        <IdentityModal
+          v-if="showIdentityModal"
+          :is-mandatory="isIdentityMandatory"
+          :title="identityModalTitle"
+          :description="identityModalDescription"
+          @save="handleIdentitySaved"
+          @close="showIdentityModal = false"
+        />
+      </Transition>
+    </Teleport>
 
     <!-- 2. Propose or Edit Card Idea Modal -->
-    <Transition name="modal">
-      <CreateIdeaModal
-        v-if="showIdeaModal"
-        :existing-idea="editingIdea"
-        :is-host="isHost"
-        @submit="handleSaveIdea"
-        @delete="handleDeleteIdea"
-        @close="showIdeaModal = false"
-      />
-    </Transition>
+    <Teleport to="body">
+      <Transition name="modal">
+        <CreateIdeaModal
+          v-if="showIdeaModal"
+          :existing-idea="editingIdea"
+          :is-host="isHost"
+          @submit="handleSaveIdea"
+          @delete="handleDeleteIdea"
+          @close="showIdeaModal = false"
+        />
+      </Transition>
+    </Teleport>
   </div>
 </template>

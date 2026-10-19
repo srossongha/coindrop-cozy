@@ -81,7 +81,7 @@ function handleDelete() {
     class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
   >
     <div
-      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative"
+      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
     >
       <!-- Close button -->
       <button
