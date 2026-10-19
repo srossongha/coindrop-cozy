@@ -9,7 +9,7 @@ const { coins } = useCoinDrop()
 
 <template>
   <div class="w-full h-full absolute inset-0">
-    <TresCanvas clear-color="#0a0a16" shadows window-size>
+    <TresCanvas clear-color="#0b1220" shadows window-size>
       <TresPerspectiveCamera :position="[0, 5, 8]" :look-at="[0, 1, 0]" />
       <OrbitControls
         :enable-damping="true"

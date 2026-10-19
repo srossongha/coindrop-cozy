@@ -31,7 +31,7 @@ const showLobbyModal = ref(false)
       <CoinExperience />
       <template #fallback>
         <div
-          class="flex items-center justify-center h-full bg-slate-950 text-slate-400 font-mono text-sm"
+          class="flex items-center justify-center h-full bg-[#0b1220] text-[#8fa3c4] font-mono text-sm"
         >
           Loading 3D Scene...
         </div>

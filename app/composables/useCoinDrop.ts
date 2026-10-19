@@ -7,8 +7,8 @@ export function useCoinDrop() {
   const totalScore = useState<number>('coindrop-score', () => 0)
 
   function dropCoin() {
-    const randomColor = COIN_COLORS[Math.floor(Math.random() * COIN_COLORS.length)] || '#f59e0b'
-    const pointValue = randomColor === '#38bdf8' ? 50 : randomColor === '#f97316' ? 25 : 10
+    const randomColor = COIN_COLORS[Math.floor(Math.random() * COIN_COLORS.length)] || '#f5c242'
+    const pointValue = randomColor === '#d0ebff' ? 50 : randomColor === '#74b9ff' ? 25 : 10
 
     const newCoin: CoinItem = {
       id: `coin-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,

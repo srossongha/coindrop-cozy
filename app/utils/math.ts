@@ -7,8 +7,8 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 export const COIN_COLORS = [
-  '#f59e0b', // Amber Gold
-  '#eab308', // Bright Yellow Gold
-  '#f97316', // Bronze / Copper
-  '#38bdf8', // Diamond / Platinum Cyan
+  '#f5c242', // Signature Coin Gold
+  '#f5c242', // Signature Coin Gold (weighted higher)
+  '#74b9ff', // Pastel Sky
+  '#d0ebff', // Soft Highlight
 ]

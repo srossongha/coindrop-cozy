@@ -52,35 +52,27 @@ function handleSubmit() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0b1220]/80 backdrop-blur-md"
   >
     <div
-      class="w-full max-w-lg bg-slate-900 border border-slate-700/70 rounded-3xl p-6 shadow-2xl relative overflow-hidden"
+      class="w-full max-w-lg bg-[#121a2b] border border-[#25314a] rounded-[16px] p-6 shadow-2xl relative"
     >
-      <!-- Glow ambient background -->
-      <div
-        class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"
-      />
-      <div
-        class="absolute -bottom-24 -left-24 w-48 h-48 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none"
-      />
-
       <div class="flex items-center justify-between mb-6 relative">
         <div class="flex items-center space-x-3">
           <div
-            class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold border border-amber-500/30"
+            class="w-10 h-10 rounded-xl bg-[#0b1220] text-[#d0ebff] flex items-center justify-center text-xl font-bold border border-[#25314a]"
           >
             🎮
           </div>
           <div>
-            <h3 class="text-xl font-black text-white">Create a Lobby</h3>
-            <p class="text-xs text-slate-400">Host an interactive multiplayer drop room</p>
+            <h3 class="text-xl font-black text-[#eaf2ff]">Create a Lobby</h3>
+            <p class="text-xs text-[#8fa3c4]">Host an interactive multiplayer drop room</p>
           </div>
         </div>
 
         <button
           type="button"
-          class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+          class="w-8 h-8 rounded-full bg-[#0b1220] text-[#8fa3c4] hover:text-[#eaf2ff] border border-[#25314a] flex items-center justify-center transition-colors cursor-pointer"
           @click="emit('close')"
         >
           ✕
@@ -90,21 +82,21 @@ function handleSubmit() {
       <form class="space-y-5 relative" @submit.prevent="handleSubmit">
         <!-- Lobby Name -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label class="block text-xs font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1.5">
             Lobby Name
           </label>
           <input
             v-model="name"
             type="text"
             placeholder="e.g. Friday Coin Championship"
-            class="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+            class="w-full px-4 py-3 rounded-xl bg-[#0b1220] border border-[#25314a] text-[#eaf2ff] placeholder-[#8fa3c4]/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#74b9ff] focus:border-transparent transition-all"
             autofocus
           />
         </div>
 
         <!-- Mode Selection -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+          <label class="block text-xs font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1.5">
             Game Mode
           </label>
           <div class="grid grid-cols-3 gap-2.5">
@@ -113,16 +105,16 @@ function handleSubmit() {
               :key="m.id"
               type="button"
               :class="[
-                'p-3 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer',
+                'p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer',
                 mode === m.id
-                  ? 'bg-amber-500/15 border-amber-500 text-white shadow-lg shadow-amber-500/10'
-                  : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-300',
+                  ? 'bg-[#0b1220] border-2 border-[#74b9ff] text-[#eaf2ff] shadow-sm'
+                  : 'bg-[#0b1220] border border-[#25314a] text-[#8fa3c4] hover:border-[#8fa3c4]/50 hover:text-[#eaf2ff]',
               ]"
               @click="mode = m.id"
             >
               <div class="text-xl mb-1">{{ m.icon }}</div>
-              <p class="text-xs font-bold">{{ m.title }}</p>
-              <p class="text-[10px] text-slate-500 leading-tight mt-0.5">{{ m.desc }}</p>
+              <p class="text-xs font-bold text-[#eaf2ff]">{{ m.title }}</p>
+              <p class="text-[10px] text-[#8fa3c4] leading-tight mt-0.5">{{ m.desc }}</p>
             </button>
           </div>
         </div>
@@ -131,9 +123,9 @@ function handleSubmit() {
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label
-              class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5"
+              class="block text-xs font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1.5"
             >
-              Capacity: <span class="text-amber-400 font-bold">{{ maxPlayers }} Players</span>
+              Capacity: <span class="text-[#d0ebff] font-bold">{{ maxPlayers }} Players</span>
             </label>
             <div class="flex items-center space-x-1.5">
               <button
@@ -143,8 +135,8 @@ function handleSubmit() {
                 :class="[
                   'flex-1 py-2 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer',
                   maxPlayers === cap
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500'
-                    : 'bg-slate-950/40 text-slate-500 border-slate-800 hover:border-slate-700',
+                    ? 'bg-[#0b1220] text-[#d0ebff] border-2 border-[#74b9ff]'
+                    : 'bg-[#0b1220] text-[#8fa3c4] border border-[#25314a] hover:border-[#8fa3c4]/50',
                 ]"
                 @click="maxPlayers = cap"
               >
@@ -155,18 +147,18 @@ function handleSubmit() {
 
           <div>
             <label
-              class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5"
+              class="block text-xs font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1.5"
             >
               Access
             </label>
             <button
               type="button"
-              class="w-full py-2.5 px-3 rounded-xl bg-slate-950/60 border border-slate-700 text-xs font-medium text-slate-300 flex items-center justify-between cursor-pointer hover:border-slate-600 transition-colors"
+              class="w-full py-2.5 px-3 rounded-xl bg-[#0b1220] border border-[#25314a] text-xs font-medium text-[#eaf2ff] flex items-center justify-between cursor-pointer hover:border-[#8fa3c4]/50 transition-colors"
               @click="isPrivate = !isPrivate"
             >
               <span>{{ isPrivate ? '🔒 Private (Code)' : '🌐 Public' }}</span>
               <span
-                :class="['w-2 h-2 rounded-full', isPrivate ? 'bg-amber-400' : 'bg-emerald-400']"
+                :class="['w-2 h-2 rounded-full', isPrivate ? 'bg-[#8fa3c4]' : 'bg-[#3fb950]']"
               />
             </button>
           </div>
@@ -180,14 +172,14 @@ function handleSubmit() {
         <div class="flex items-center space-x-3 pt-2">
           <button
             type="button"
-            class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm transition-colors cursor-pointer"
+            class="flex-1 py-3 rounded-xl bg-[#0b1220] hover:bg-[#25314a]/50 text-[#8fa3c4] hover:text-[#eaf2ff] border border-[#25314a] font-medium text-sm transition-colors cursor-pointer"
             @click="emit('close')"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
+            class="flex-1 py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 cursor-pointer"
           >
             Launch Lobby
           </button>

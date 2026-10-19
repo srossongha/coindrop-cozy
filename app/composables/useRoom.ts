@@ -15,11 +15,11 @@ export function useRoom() {
   }
 
   function createPoll(params: { title: string; options: string[]; coinsPerUser: number }) {
-    const defaultColors = ['#f59e0b', '#38bdf8', '#a855f7', '#ec4899', '#10b981', '#f97316']
+    const defaultColors = ['#74b9ff', '#d0ebff', '#a5d8ff', '#3fb950', '#8fa3c4', '#f5c242']
     const pollOptions: PollOption[] = params.options.map((opt, idx) => ({
       id: `opt-${idx + 1}`,
       label: opt.trim() || `Option ${idx + 1}`,
-      color: defaultColors[idx % defaultColors.length] ?? '#f59e0b',
+      color: defaultColors[idx % defaultColors.length] ?? '#74b9ff',
       coinsCount: 0,
     }))
 

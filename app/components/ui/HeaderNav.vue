@@ -3,28 +3,29 @@
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-3 pointer-events-auto">
         <div
-          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-black text-xl"
+          class="w-9 h-9 rounded-xl bg-[#121a2b] border border-[#25314a] flex items-center justify-center text-lg shadow-sm"
         >
-          🪙
+          <span class="text-[#f5c242]">🪙</span>
         </div>
         <div>
-          <h1 class="text-xl font-black tracking-tight text-white drop-shadow-md">
-            CoinDrop <span class="text-amber-400">3D</span>
+          <h1 class="text-lg font-black tracking-tight text-[#eaf2ff]">
+            CoinDrop <span class="text-[#8fa3c4] font-normal text-sm">3D</span>
           </h1>
-          <p class="text-xs text-slate-400 font-mono">Nuxt 4 + Tres.js</p>
+          <p class="text-xs text-[#8fa3c4] font-mono">Nuxt 4 + Tres.js</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2 pointer-events-auto">
+      <div class="flex items-center space-x-2.5 pointer-events-auto">
+        <div
+          class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-mono bg-[#121a2b] border border-[#25314a]"
+        >
+          <span class="w-2 h-2 rounded-full bg-[#3fb950]" />
+          <span class="text-[#8fa3c4]">Ready</span>
+        </div>
         <span
-          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 backdrop-blur-md"
+          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-[#121a2b] text-[#d0ebff] border border-[#25314a]"
         >
           Tres.js v5
-        </span>
-        <span
-          class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 backdrop-blur-md"
-        >
-          Three.js
         </span>
       </div>
     </div>
