@@ -12,6 +12,9 @@ export default defineNuxtConfig({
       deployConfig: true,
       nodeCompat: true,
     },
+    experimental: {
+      websocket: true,
+    },
   },
   vite: {
     plugins: [tailwindcss()],

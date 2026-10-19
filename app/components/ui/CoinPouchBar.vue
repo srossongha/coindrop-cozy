@@ -1,62 +1,84 @@
 <script setup lang="ts">
-import type { UserProfile } from '~/types'
-import { MAX_COINS_PER_USER } from '~/utils/constants'
+import type { Identity } from '~/types'
 
 defineProps<{
-  userProfile: UserProfile
-  myCoinsRemaining: number
-  shakePouch: boolean
+  user: Identity
+  goldRemaining: number
+  redRemaining: number
+  maxGold?: number
+  maxRed?: number
 }>()
 </script>
 
 <template>
   <div class="fixed bottom-4 inset-x-0 z-30 px-4 pointer-events-none">
     <div
-      class="max-w-xl mx-auto pointer-events-auto bg-[#121a2b]/95 backdrop-blur-xl border rounded-[16px] px-4 py-3 shadow-2xl flex items-center justify-between gap-4 transition-all"
-      :class="[
-        shakePouch
-          ? 'border-rose-500 animate-bounce'
-          : 'border-[#25314a] hover:border-[#d0ebff]/40 shadow-sky-glow',
-      ]"
+      class="max-w-2xl mx-auto pointer-events-auto bg-[#121a2b]/95 backdrop-blur-xl border border-[#25314a] rounded-[16px] px-4 py-3 shadow-2xl flex items-center justify-between gap-4 transition-all hover:border-[#74b9ff]/40 shadow-sky-glow"
     >
+      <!-- User Persona & Remaining Summary -->
       <div class="flex items-center gap-3">
         <div
           class="w-10 h-10 rounded-xl bg-[#0b1220] border border-[#25314a] flex items-center justify-center text-xl shrink-0"
         >
-          {{ userProfile.emoji }}
+          {{ user.emoji }}
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#d0ebff] font-mono">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#d0ebff]">
               Your Coin Pouch
             </span>
-            <span class="text-xs font-mono font-bold text-[#f5c242]">
-              ({{ myCoinsRemaining }}/{{ MAX_COINS_PER_USER }} left)
-            </span>
+            <span class="text-xs font-medium text-[#8fa3c4]"> ({{ user.name }}) </span>
           </div>
           <p class="text-[11px] text-[#8fa3c4] hidden sm:block">
-            {{
-              myCoinsRemaining === 0
-                ? 'All coins deployed! Reclaim with -1🪙 to change votes.'
-                : 'Spread your coins out or go all-in on your favorite card.'
-            }}
+            5 Gold Coins (1 pt) & 2 Red Coins (2 pts). Drop them onto your top choices!
           </p>
         </div>
       </div>
 
-      <!-- Visual Gold Coins (Strictly #f5c242 reserved for coins) -->
-      <div class="flex items-center gap-1.5 shrink-0">
-        <div
-          v-for="(_, idx) in MAX_COINS_PER_USER"
-          :key="idx"
-          class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black transition-all duration-300 select-none"
-          :class="[
-            idx < myCoinsRemaining
-              ? 'bg-[#0b1220] border-2 border-[#f5c242] shadow-sm shadow-[#f5c242]/30 scale-100'
-              : 'bg-[#0b1220]/40 text-[#8fa3c4]/30 border border-dashed border-[#25314a] scale-90 opacity-40',
-          ]"
-        >
-          🪙
+      <!-- Coin Pockets -->
+      <div class="flex items-center gap-3 shrink-0">
+        <!-- Gold Pocket -->
+        <div class="flex flex-col items-end">
+          <span class="text-[10px] uppercase font-bold text-[#f5c242] tracking-wider mb-0.5">
+            Gold: {{ goldRemaining }}/5
+          </span>
+          <div class="flex items-center gap-1">
+            <div
+              v-for="(_, idx) in maxGold || 5"
+              :key="'gp-' + idx"
+              class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300 select-none"
+              :class="[
+                idx < goldRemaining
+                  ? 'bg-[#0b1220] border-2 border-[#f5c242] shadow-sm shadow-[#f5c242]/30 scale-100'
+                  : 'bg-[#0b1220]/40 text-[#8fa3c4]/30 border border-dashed border-[#25314a] scale-90 opacity-40',
+              ]"
+            >
+              🪙
+            </div>
+          </div>
+        </div>
+
+        <div class="w-px h-8 bg-[#25314a]" />
+
+        <!-- Red Pocket (Super Votes) -->
+        <div class="flex flex-col items-end">
+          <span class="text-[10px] uppercase font-bold text-[#ef4444] tracking-wider mb-0.5">
+            Red: {{ redRemaining }}/2
+          </span>
+          <div class="flex items-center gap-1">
+            <div
+              v-for="(_, idx) in maxRed || 2"
+              :key="'rp-' + idx"
+              class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-300 select-none"
+              :class="[
+                idx < redRemaining
+                  ? 'bg-[#0b1220] border-2 border-[#ef4444] shadow-sm shadow-[#ef4444]/30 scale-100'
+                  : 'bg-[#0b1220]/40 text-[#8fa3c4]/30 border border-dashed border-[#25314a] scale-90 opacity-40',
+              ]"
+            >
+              🔴
+            </div>
+          </div>
         </div>
       </div>
     </div>
