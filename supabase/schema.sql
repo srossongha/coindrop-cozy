@@ -69,3 +69,4 @@ BEGIN;
   DROP PUBLICATION IF EXISTS supabase_realtime;
   CREATE PUBLICATION supabase_realtime FOR TABLE coindrop_lobbies, coindrop_ideas, coindrop_votes;
 COMMIT;
+
