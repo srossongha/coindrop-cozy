@@ -76,71 +76,68 @@ function getMidAngle(index: number, total: number) {
 
 <template>
   <div
-    class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#121a2b] border border-[#25314a] rounded-[16px] p-6 sm:p-8"
+    class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-card border border-line rounded-[16px] p-6 sm:p-8"
   >
     <!-- Left Column: Explanation & Contenders -->
     <div class="lg:col-span-5 space-y-5">
       <div
-        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0b1220] border border-[#25314a] text-[#d0ebff] text-xs font-bold font-mono"
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-canvas border border-line text-sky-soft text-xs font-bold font-mono"
       >
         <Sparkles class="w-3.5 h-3.5" />
         <span>Synced Physics Tie-Breaker</span>
       </div>
 
-      <h2 class="text-2xl font-extrabold text-[#eaf2ff]">
+      <h2 class="text-2xl font-extrabold text-text-primary">
         Can’t break a tie? Let the wheel decide!
       </h2>
-      <p class="text-sm text-[#8fa3c4] leading-relaxed">
+      <p class="text-sm text-text-muted leading-relaxed">
         All options that received at least 1 gold coin are loaded onto the wheel below. Hit spin to
         run a smooth cubic-bezier physics roll.
       </p>
 
       <div class="space-y-2">
-        <div class="text-xs font-bold uppercase tracking-wider text-[#8fa3c4] font-mono">
+        <div class="text-xs font-bold uppercase tracking-wider text-text-muted font-mono">
           Contenders on the Wheel ({{ activePool.length }})
         </div>
         <div
           v-for="(item, idx) in activePool"
           :key="item.id"
-          class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#0b1220] border border-[#25314a] text-xs"
+          class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-canvas border border-line text-xs"
         >
           <div class="flex items-center gap-2.5 truncate">
             <span
               class="w-3 h-3 rounded-full shrink-0"
               :style="{ backgroundColor: WHEEL_COLORS[idx % WHEEL_COLORS.length] }"
             />
-            <span class="font-semibold text-[#eaf2ff] truncate">{{ item.title }}</span>
+            <span class="font-semibold text-text-primary truncate">{{ item.title }}</span>
           </div>
-          <span class="font-mono text-[#f5c242] shrink-0 font-bold">{{ item.totalCoins }} 🪙</span>
+          <span class="font-mono text-gold shrink-0 font-bold">{{ item.totalCoins }} 🪙</span>
         </div>
       </div>
 
       <button
         type="button"
         :disabled="isSpinning || activePool.length === 0"
-        class="w-full py-3.5 rounded-xl bg-sky-gradient text-[#0b1220] font-black text-sm shadow-md transition-all active:scale-98 disabled:opacity-50 cursor-pointer"
+        class="w-full py-3.5 rounded-xl bg-sky-gradient text-canvas font-black text-sm shadow-md transition-all active:scale-98 disabled:opacity-50 cursor-pointer"
         @click="spinWheel"
       >
         {{ isSpinning ? 'Spinning the Wheel...' : '🎡 Spin Tie-Breaker Wheel!' }}
       </button>
 
       <!-- Winner Announcement Box -->
-      <div
-        v-if="winner"
-        class="p-4 rounded-xl bg-[#0b1220] border border-[#3fb950] animate-in fade-in"
-      >
+      <div v-if="winner" class="p-4 rounded-xl bg-canvas border border-emerald animate-in fade-in">
         <div class="flex items-center justify-between mb-1">
           <span
-            class="text-xs font-bold uppercase tracking-wider text-[#3fb950] flex items-center gap-1.5"
+            class="text-xs font-bold uppercase tracking-wider text-emerald flex items-center gap-1.5"
           >
             <PartyPopper class="w-4 h-4" /> Wheel Selected Winner!
           </span>
-          <span class="text-xs font-mono font-bold text-[#f5c242]">{{ winner.totalCoins }} 🪙</span>
+          <span class="text-xs font-mono font-bold text-gold">{{ winner.totalCoins }} 🪙</span>
         </div>
-        <div class="text-lg font-extrabold text-[#eaf2ff] mb-3">{{ winner.title }}</div>
+        <div class="text-lg font-extrabold text-text-primary mb-3">{{ winner.title }}</div>
         <button
           type="button"
-          class="w-full py-2 rounded-xl bg-[#3fb950] hover:bg-[#3fb950]/90 text-[#0b1220] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          class="w-full py-2 rounded-xl bg-emerald hover:bg-emerald/90 text-canvas font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           @click="emit('lockWinner', winner.id)"
         >
           <Lock class="w-3.5 h-3.5" />
@@ -165,7 +162,7 @@ function getMidAngle(index: number, total: number) {
       </div>
 
       <div
-        class="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full p-2 bg-[#0b1220] border-4 border-[#25314a] shadow-2xl flex items-center justify-center overflow-hidden"
+        class="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full p-2 bg-canvas border-4 border-line shadow-2xl flex items-center justify-center overflow-hidden"
       >
         <svg
           viewBox="-100 -100 200 200"
@@ -198,7 +195,7 @@ function getMidAngle(index: number, total: number) {
 
         <!-- Center Hub Cap -->
         <div
-          class="absolute w-14 h-14 rounded-full bg-[#0b1220] border-4 border-[#74b9ff] flex items-center justify-center shadow-xl"
+          class="absolute w-14 h-14 rounded-full bg-canvas border-4 border-sky-end flex items-center justify-center shadow-xl"
         >
           <span class="text-xl">🪙</span>
         </div>

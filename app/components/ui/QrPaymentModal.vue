@@ -19,40 +19,40 @@ function handlePaid() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-[#0b1220]/85 backdrop-blur-sm flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 bg-canvas/85 backdrop-blur-sm flex items-center justify-center p-4"
   >
     <div
-      class="bg-[#121a2b] border border-[#25314a] rounded-[16px] max-w-sm w-full p-6 text-center shadow-2xl animate-in fade-in"
+      class="bg-card border border-line rounded-[16px] max-w-sm w-full p-6 text-center shadow-2xl animate-in fade-in"
     >
       <div class="flex items-center justify-between mb-3">
         <span
-          class="px-2.5 py-0.5 rounded-md bg-[#d0ebff]/15 text-[#d0ebff] border border-[#25314a] text-[11px] font-bold tracking-wider uppercase font-mono"
+          class="px-2.5 py-0.5 rounded-md bg-sky-soft/15 text-sky-soft border border-line text-[11px] font-bold tracking-wider uppercase font-mono"
         >
           KHQR / Instant Scan
         </span>
         <button
-          class="text-[#8fa3c4] hover:text-[#eaf2ff] transition-colors cursor-pointer"
+          class="text-text-muted hover:text-text-primary transition-colors cursor-pointer"
           @click="emit('close')"
         >
           <X class="w-5 h-5" />
         </button>
       </div>
 
-      <h4 class="text-base font-bold text-[#eaf2ff] mb-1">
+      <h4 class="text-base font-bold text-text-primary mb-1">
         Pay {{ transfer.to.name }} {{ transfer.to.emoji }}
       </h4>
-      <p class="text-xs text-[#8fa3c4] mb-4">
+      <p class="text-xs text-text-muted mb-4">
         Settling share from {{ transfer.from.name }} {{ transfer.from.emoji }}
       </p>
 
       <!-- Styled Bank QR Card -->
       <div class="bg-white rounded-2xl p-4 mx-auto w-56 shadow-inner mb-4">
         <div
-          class="bg-[#0b1220] text-[#74b9ff] text-xs font-black py-1.5 rounded-t-lg mb-3 tracking-widest font-mono"
+          class="bg-canvas text-sky-end text-xs font-black py-1.5 rounded-t-lg mb-3 tracking-widest font-mono"
         >
           KHQR • ABA / BAKONG
         </div>
-        <div class="text-[#0b1220] font-black text-2xl mb-2 font-mono">
+        <div class="text-canvas font-black text-2xl mb-2 font-mono">
           ${{ transfer.amount.toFixed(2) }}
         </div>
         <!-- SVG QR Code Representation -->
@@ -85,7 +85,7 @@ function handlePaid() {
 
       <button
         type="button"
-        class="w-full py-2.5 rounded-xl bg-[#3fb950] hover:bg-[#3fb950]/90 text-[#0b1220] font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+        class="w-full py-2.5 rounded-xl bg-emerald hover:bg-emerald/90 text-canvas font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
         @click="handlePaid"
       >
         <CheckCircle2 class="w-4 h-4" />

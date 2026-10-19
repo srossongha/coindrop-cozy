@@ -37,17 +37,17 @@ function getSafeLink(url?: string): string {
     :class="[
       'relative rounded-[16px] p-3.5 sm:p-5 flex flex-col justify-between transition-all duration-300 group',
       isWinner
-        ? 'bg-[#121a2b] p-[2px] rounded-[16px] bg-sky-gradient shadow-2xl shadow-[#74b9ff]/30 scale-[1.02] animate-pulse-glow'
+        ? 'bg-card p-[2px] rounded-[16px] bg-sky-gradient shadow-2xl shadow-sky-end/30 scale-[1.02] animate-pulse-glow'
         : card.isLeader && !isFinishedPhase
-          ? 'bg-[#121a2b] border-2 border-[#74b9ff]/60 shadow-sky-glow hover:-translate-y-1'
-          : 'bg-[#121a2b] border border-[#25314a] hover:border-[#74b9ff]/60 hover:shadow-sky-glow hover:-translate-y-1',
+          ? 'bg-card border-2 border-sky-end/60 shadow-sky-glow hover:-translate-y-1'
+          : 'bg-card border border-line hover:border-sky-end/60 hover:shadow-sky-glow hover:-translate-y-1',
     ]"
   >
     <!-- Inner container for gradient border wrapper when winning -->
     <div
       :class="[
         'w-full h-full rounded-[14px] flex flex-col justify-between',
-        isWinner ? 'bg-[#121a2b] p-3.5 sm:p-5' : '',
+        isWinner ? 'bg-card p-3.5 sm:p-5' : '',
       ]"
     >
       <!-- Top Meta Bar: Category, Leader / Winner Trophy, and Edit button -->
@@ -55,16 +55,16 @@ function getSafeLink(url?: string): string {
         <div class="flex items-center justify-between gap-2 mb-2.5">
           <div class="flex items-center gap-1.5 flex-wrap">
             <span
-              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0b1220] border border-[#25314a] text-[#8fa3c4] flex items-center gap-1"
+              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-canvas border border-line text-text-muted flex items-center gap-1"
             >
-              <Tag class="w-3 h-3 text-[#74b9ff]" />
+              <Tag class="w-3 h-3 text-sky-end" />
               <span>{{ card.category || 'General' }}</span>
             </span>
 
             <!-- Winner Trophy Banner -->
             <span
               v-if="isWinner"
-              class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-sky-gradient text-[#0b1220] flex items-center gap-1 shadow"
+              class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-sky-gradient text-canvas flex items-center gap-1 shadow"
             >
               <Trophy class="w-3 h-3" />
               <span>Winner!</span>
@@ -73,9 +73,9 @@ function getSafeLink(url?: string): string {
             <!-- Live Leader Tag -->
             <span
               v-else-if="card.isLeader && card.totalScore > 0"
-              class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#74b9ff]/15 text-[#74b9ff] border border-[#74b9ff]/30 flex items-center gap-1"
+              class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-end/15 text-sky-end border border-sky-end/30 flex items-center gap-1"
             >
-              <Crown class="w-3 h-3 text-[#f5c242]" />
+              <Crown class="w-3 h-3 text-gold" />
               <span>Leading</span>
             </span>
           </div>
@@ -84,7 +84,7 @@ function getSafeLink(url?: string): string {
           <button
             v-if="canEdit"
             type="button"
-            class="text-[#8fa3c4] hover:text-[#d0ebff] p-1 rounded-lg hover:bg-[#0b1220] border border-transparent hover:border-[#25314a] transition-all text-xs flex items-center gap-1 cursor-pointer"
+            class="text-text-muted hover:text-sky-soft p-1 rounded-lg hover:bg-canvas border border-transparent hover:border-line transition-all text-xs flex items-center gap-1 cursor-pointer"
             title="Edit option details"
             @click="emit('editCard', card)"
           >
@@ -95,20 +95,20 @@ function getSafeLink(url?: string): string {
 
         <!-- Title -->
         <h3
-          class="text-base font-bold text-[#eaf2ff] mb-1.5 leading-snug group-hover:text-white transition-colors"
+          class="text-base font-bold text-text-primary mb-1.5 leading-snug group-hover:text-white transition-colors"
         >
           {{ card.title }}
         </h3>
 
         <!-- Description (if provided) -->
-        <p v-if="card.description" class="text-xs text-[#8fa3c4] mb-2 leading-relaxed">
+        <p v-if="card.description" class="text-xs text-text-muted mb-2 leading-relaxed">
           {{ card.description }}
         </p>
 
         <!-- Price Note & External Link Row -->
-        <div class="flex items-center gap-3 text-xs text-[#8fa3c4] mb-3 flex-wrap">
-          <span v-if="card.priceNote" class="flex items-center gap-1 text-[#d0ebff]">
-            <DollarSign class="w-3.5 h-3.5 text-[#f5c242]" />
+        <div class="flex items-center gap-3 text-xs text-text-muted mb-3 flex-wrap">
+          <span v-if="card.priceNote" class="flex items-center gap-1 text-sky-soft">
+            <DollarSign class="w-3.5 h-3.5 text-gold" />
             <span>{{ card.priceNote }}</span>
           </span>
 
@@ -117,7 +117,7 @@ function getSafeLink(url?: string): string {
             :href="getSafeLink(card.link)"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[#74b9ff] hover:text-[#d0ebff] hover:underline flex items-center gap-1"
+            class="text-sky-end hover:text-sky-soft hover:underline flex items-center gap-1"
           >
             <span>View Link</span>
             <ExternalLink class="w-3 h-3" />
@@ -125,9 +125,9 @@ function getSafeLink(url?: string): string {
         </div>
 
         <!-- Proposer Credit -->
-        <div class="text-[11px] text-[#8fa3c4]/70 mb-4 flex items-center gap-1.5">
+        <div class="text-[11px] text-text-muted/70 mb-4 flex items-center gap-1.5">
           <span>Proposed by</span>
-          <span class="inline-flex items-center gap-1 font-medium text-[#eaf2ff]">
+          <span class="inline-flex items-center gap-1 font-medium text-text-primary">
             <span>{{ card.authorEmoji }}</span>
             <span>{{ card.authorName }}</span>
           </span>

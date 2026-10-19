@@ -16,7 +16,7 @@ defineProps<{
     >
       <span class="text-3xl drop-shadow-lg select-none">{{ r.emoji }}</span>
       <span
-        class="text-[10px] font-bold bg-[#121a2b]/95 text-[#eaf2ff] px-2 py-0.5 rounded-full border border-[#25314a] shadow"
+        class="text-[10px] font-bold bg-card/95 text-text-primary px-2 py-0.5 rounded-full border border-line shadow"
       >
         {{ r.authorName }}
       </span>

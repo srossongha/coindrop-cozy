@@ -62,8 +62,8 @@ onUnmounted(() => {
     class="relative overflow-hidden select-none rounded-xl px-3.5 py-2 text-xs font-semibold transition-transform active:scale-95 border cursor-pointer"
     :class="[
       completed
-        ? 'bg-[#121a2b] border-[#3fb950] text-[#3fb950]'
-        : 'bg-[#121a2b] hover:bg-[#121a2b]/90 border-rose-500/40 text-rose-300',
+        ? 'bg-card border-emerald text-emerald'
+        : 'bg-card hover:bg-card/90 border-rose-500/40 text-rose-300',
       isHolding ? 'animate-pulse' : '',
     ]"
     @mousedown="startHold"
@@ -74,12 +74,12 @@ onUnmounted(() => {
   >
     <!-- Progress Fill Bar -->
     <span
-      class="absolute inset-y-0 left-0 bg-gradient-to-r from-rose-500/30 to-[#74b9ff]/40 transition-none pointer-events-none"
+      class="absolute inset-y-0 left-0 bg-gradient-to-r from-rose-500/30 to-sky-end/40 transition-none pointer-events-none"
       :style="{ width: `${progress}%` }"
     />
     <span class="relative z-10 flex items-center gap-1.5">
       <template v-if="completed">
-        <Check class="w-3.5 h-3.5 text-[#3fb950]" />
+        <Check class="w-3.5 h-3.5 text-emerald" />
         <span>Reset Complete!</span>
       </template>
       <template v-else>

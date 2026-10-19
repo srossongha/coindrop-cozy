@@ -61,16 +61,16 @@ function handleSave() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+    class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
   >
     <div
-      class="modal-dialog w-full max-w-md max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
+      class="modal-dialog w-full max-w-md max-h-[92vh] overflow-y-auto bg-card border border-line rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
     >
       <!-- Close button (only if not mandatory first-join) -->
       <button
         v-if="!isMandatory"
         type="button"
-        class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] transition-colors cursor-pointer"
+        class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
         @click="emit('close')"
       >
         <X class="w-5 h-5" />
@@ -79,27 +79,27 @@ function handleSave() {
       <!-- Header -->
       <div class="flex items-center gap-3 mb-2 pr-6">
         <div
-          class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#0b1220] border-2 border-[#74b9ff]/40 flex items-center justify-center text-xl sm:text-2xl shadow-inner shrink-0"
+          class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-canvas border-2 border-sky-end/40 flex items-center justify-center text-xl sm:text-2xl shadow-inner shrink-0"
         >
           {{ currentEmoji }}
         </div>
         <div>
-          <h2 class="text-sm sm:text-base font-bold text-[#eaf2ff] flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-bold text-text-primary flex items-center gap-2">
             <span>{{ title }}</span>
-            <Sparkles class="w-4 h-4 text-[#74b9ff]" />
+            <Sparkles class="w-4 h-4 text-sky-end" />
           </h2>
-          <p class="text-[11px] sm:text-xs text-[#8fa3c4]">
+          <p class="text-[11px] sm:text-xs text-text-muted">
             {{ description }}
           </p>
         </div>
       </div>
 
       <!-- Quick Randomize -->
-      <div class="flex items-center justify-between mb-4 mt-3 pt-3 border-t border-[#25314a]">
-        <span class="text-xs font-semibold text-[#8fa3c4]">Need inspiration?</span>
+      <div class="flex items-center justify-between mb-4 mt-3 pt-3 border-t border-line">
+        <span class="text-xs font-semibold text-text-muted">Need inspiration?</span>
         <button
           type="button"
-          class="text-xs text-[#74b9ff] hover:text-[#d0ebff] flex items-center gap-1 font-semibold cursor-pointer active:scale-95"
+          class="text-xs text-sky-end hover:text-sky-soft flex items-center gap-1 font-semibold cursor-pointer active:scale-95"
           @click="pickRandomPersona"
         >
           <Shuffle class="w-3.5 h-3.5" />
@@ -109,7 +109,9 @@ function handleSave() {
 
       <!-- Emoji Picker Grid -->
       <div class="mb-4">
-        <label class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-2">
+        <label
+          class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2"
+        >
           Select Mascot Emoji
         </label>
         <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
@@ -120,8 +122,8 @@ function handleSave() {
             :class="[
               'p-2 rounded-xl text-xl flex items-center justify-center transition-all cursor-pointer active:scale-95',
               currentEmoji === em
-                ? 'bg-[#0b1220] border-2 border-[#74b9ff] scale-105 shadow-md shadow-[#74b9ff]/20'
-                : 'bg-[#0b1220] border border-[#25314a] hover:border-[#8fa3c4]/50 opacity-80 hover:opacity-100',
+                ? 'bg-canvas border-2 border-sky-end scale-105 shadow-md shadow-sky-end/20'
+                : 'bg-canvas border border-line hover:border-text-muted/50 opacity-80 hover:opacity-100',
             ]"
             @click="currentEmoji = em"
           >
@@ -133,7 +135,7 @@ function handleSave() {
       <!-- Name Input -->
       <div class="mb-5">
         <label
-          class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1.5"
+          class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1.5"
         >
           Display Name
         </label>
@@ -142,7 +144,7 @@ function handleSave() {
           type="text"
           maxlength="24"
           placeholder="e.g. Chill Capybara"
-          class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+          class="w-full bg-canvas border border-line rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
           @keydown.enter="handleSave"
         />
       </div>
@@ -150,7 +152,7 @@ function handleSave() {
       <!-- Submit Button -->
       <button
         type="button"
-        class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-lg transition-all duration-200 hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+        class="w-full py-3 rounded-xl bg-sky-gradient text-canvas font-bold text-sm shadow-lg transition-all duration-200 hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
         @click="handleSave"
       >
         <Check class="w-4 h-4" />

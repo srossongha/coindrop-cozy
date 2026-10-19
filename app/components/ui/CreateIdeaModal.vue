@@ -78,15 +78,15 @@ function handleDelete() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+    class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
   >
     <div
-      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
+      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-line rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
     >
       <!-- Close button -->
       <button
         type="button"
-        class="absolute top-4 right-4 text-[#8fa3c4] hover:text-[#eaf2ff] transition-colors cursor-pointer"
+        class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
         @click="emit('close')"
       >
         <X class="w-5 h-5" />
@@ -95,15 +95,15 @@ function handleDelete() {
       <!-- Header -->
       <div class="flex items-center gap-2.5 mb-2 pr-6">
         <div
-          class="w-9 h-9 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff] shrink-0"
+          class="w-9 h-9 rounded-xl bg-sky-end/15 border border-sky-end/30 flex items-center justify-center text-sky-end shrink-0"
         >
           <Sparkles class="w-4 h-4" />
         </div>
         <div>
-          <h2 class="text-sm sm:text-base font-bold text-[#eaf2ff]">
+          <h2 class="text-sm sm:text-base font-bold text-text-primary">
             {{ existingIdea ? 'Edit Card Option' : 'Propose a Card Idea' }}
           </h2>
-          <p class="text-[11px] sm:text-xs text-[#8fa3c4]">
+          <p class="text-[11px] sm:text-xs text-text-muted">
             {{
               existingIdea
                 ? 'Update details before voting locks in.'
@@ -117,7 +117,7 @@ function handleDelete() {
         <!-- Title -->
         <div>
           <label
-            class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1"
+            class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1"
           >
             Idea Title *
           </label>
@@ -126,21 +126,21 @@ function handleDelete() {
             type="text"
             required
             placeholder="e.g. Suki Soup & Sichuan Mala Hotpot 🍲"
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-canvas border border-line rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
           />
         </div>
 
         <!-- Category -->
         <div>
           <label
-            class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1 flex items-center gap-1"
+            class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1"
           >
             <Tag class="w-3.5 h-3.5" />
             <span>Category</span>
           </label>
           <select
             v-model="category"
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-canvas border border-line rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-sky-end"
           >
             <option v-for="cat in CATEGORIES" :key="cat" :value="cat">
               {{ cat }}
@@ -152,31 +152,31 @@ function handleDelete() {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label
-              class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1 flex items-center gap-1"
+              class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1"
             >
-              <DollarSign class="w-3.5 h-3.5 text-[#f5c242]" />
+              <DollarSign class="w-3.5 h-3.5 text-gold" />
               <span>Est. Cost / Note</span>
             </label>
             <input
               v-model="priceNote"
               type="text"
               placeholder="e.g. ~$12–$15 / person"
-              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+              class="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-base sm:text-xs text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
             />
           </div>
 
           <div>
             <label
-              class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1 flex items-center gap-1"
+              class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1"
             >
-              <MapPin class="w-3.5 h-3.5 text-[#74b9ff]" />
+              <MapPin class="w-3.5 h-3.5 text-sky-end" />
               <span>Google Maps / Link</span>
             </label>
             <input
               v-model="link"
               type="url"
               placeholder="https://maps.google.com/..."
-              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+              class="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-base sm:text-xs text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
             />
           </div>
         </div>
@@ -184,7 +184,7 @@ function handleDelete() {
         <!-- Optional Description -->
         <div>
           <label
-            class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-1"
+            class="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1"
           >
             Short Description (Optional)
           </label>
@@ -192,7 +192,7 @@ function handleDelete() {
             v-model="description"
             rows="2"
             placeholder="e.g. Air-conditioned, opens until 2am, good reviews on vegetarian options."
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-base sm:text-xs text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
           />
         </div>
 
@@ -210,7 +210,7 @@ function handleDelete() {
 
           <button
             type="submit"
-            class="flex-1 py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-lg transition-all duration-200 hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+            class="flex-1 py-3 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-lg transition-all duration-200 hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Check class="w-4 h-4" />
             <span>{{ existingIdea ? 'Save Changes' : 'Add to Decision Board' }}</span>

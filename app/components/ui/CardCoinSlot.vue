@@ -59,7 +59,7 @@ function triggerDropAnimation(type: CoinType) {
   floatingScores.value.push({
     id: scoreId,
     text: type === 'gold' ? '+1 🪙' : '+2 🔴',
-    color: type === 'gold' ? 'text-[#f5c242]' : 'text-[#ef4444]',
+    color: type === 'gold' ? 'text-gold' : 'text-red-500',
   })
   setTimeout(() => {
     floatingScores.value = floatingScores.value.filter(s => s.id !== scoreId)
@@ -91,7 +91,7 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
     <!-- Coin Hopper & Physics Slot Area -->
     <div
       :class="[
-        'w-full relative py-2.5 px-3 rounded-xl bg-[#0b1220]/70 border border-[#25314a] overflow-hidden flex flex-col items-center justify-center transition-all duration-300 group-hover:border-[#74b9ff]/40 shadow-inner min-h-[46px]',
+        'w-full relative py-2.5 px-3 rounded-xl bg-canvas/70 border border-line overflow-hidden flex flex-col items-center justify-center transition-all duration-300 group-hover:border-sky-end/40 shadow-inner min-h-[46px]',
         isBumping ? 'animate-card-bump' : '',
       ]"
     >
@@ -126,8 +126,8 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
               :class="[
                 'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-lg animate-coin-drop',
                 coin.type === 'gold'
-                  ? 'bg-gradient-to-b from-[#ffeaa7] via-[#f5c242] to-[#d49e1a] text-[#3d2700] border border-[#fff3b0]'
-                  : 'bg-gradient-to-b from-[#ff8787] via-[#ef4444] to-[#b91c1c] text-white border border-[#ffa8a8]',
+                  ? 'bg-gradient-to-b from-amber-200 via-gold to-amber-600 text-amber-950 border border-amber-100'
+                  : 'bg-gradient-to-b from-red-400 via-red-500 to-red-700 text-white border border-red-300',
               ]"
             >
               {{ coin.type === 'gold' ? '🪙' : '🔴' }}
@@ -150,13 +150,13 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
               <div
                 v-for="n in visibleGoldTokens"
                 :key="'g-' + n"
-                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#d49e1a] to-[#ffeaa7] border border-[#f5c242] flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
+                class="w-4 h-4 rounded-full bg-gradient-to-tr from-amber-600 to-amber-200 border border-gold flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
               >
                 🪙
               </div>
               <span
                 v-if="card.totalGold > visibleGoldTokens"
-                class="text-[10px] font-bold text-[#f5c242] pl-1.5"
+                class="text-[10px] font-bold text-gold pl-1.5"
               >
                 +{{ card.totalGold - visibleGoldTokens }}
               </span>
@@ -171,20 +171,20 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
               <div
                 v-for="n in visibleRedTokens"
                 :key="'r-' + n"
-                class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#b91c1c] to-[#ff8787] border border-[#ef4444] flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
+                class="w-4 h-4 rounded-full bg-gradient-to-tr from-red-700 to-red-400 border border-red-500 flex items-center justify-center text-[8px] shadow-sm animate-token-pop"
               >
                 🔴
               </div>
               <span
                 v-if="card.totalRed > visibleRedTokens"
-                class="text-[10px] font-bold text-[#ef4444] pl-1.5"
+                class="text-[10px] font-bold text-red-500 pl-1.5"
               >
                 +{{ card.totalRed - visibleRedTokens }}
               </span>
             </div>
           </template>
 
-          <span v-else class="text-[11px] text-[#8fa3c4]/50 italic">
+          <span v-else class="text-[11px] text-text-muted/50 italic">
             {{ isVotingPhase ? 'Ready for coins...' : 'Idea proposed' }}
           </span>
         </div>
@@ -194,8 +194,8 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
           class="text-xs font-black px-2 py-0.5 rounded-full border"
           :class="[
             card.totalScore > 0
-              ? 'bg-[#74b9ff]/15 text-[#74b9ff] border-[#74b9ff]/30'
-              : 'bg-[#121a2b] text-[#8fa3c4]/40 border-[#25314a]',
+              ? 'bg-sky-end/15 text-sky-end border-sky-end/30'
+              : 'bg-card text-text-muted/40 border-line',
           ]"
         >
           {{ card.totalScore }} pts
@@ -215,10 +215,10 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
         :class="[
           'py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-between border cursor-pointer select-none transition-all duration-200 active:scale-95 group/btn',
           card.myGold > 0
-            ? 'bg-[#f5c242]/20 border-[#f5c242]/60 text-[#f5c242] shadow-sm'
+            ? 'bg-gold/20 border-gold/60 text-gold shadow-sm'
             : myGoldRemaining > 0
-              ? 'bg-[#0b1220] hover:bg-[#f5c242]/15 text-[#d0ebff] hover:text-[#f5c242] border-[#25314a] hover:border-[#f5c242]/40'
-              : 'bg-[#0b1220]/50 text-[#8fa3c4]/30 border-[#25314a] cursor-not-allowed opacity-40',
+              ? 'bg-canvas hover:bg-gold/15 text-sky-soft hover:text-gold border-line hover:border-gold/40'
+              : 'bg-canvas/50 text-text-muted/30 border-line cursor-not-allowed opacity-40',
         ]"
         @click="handleDrop('gold')"
       >
@@ -230,13 +230,13 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
         <!-- Embedded Minus Retract Pill (Appears when you have placed a coin) -->
         <span
           v-if="card.myGold > 0"
-          class="w-5 h-5 rounded-full bg-[#121a2b] hover:bg-[#ef4444] text-[#8fa3c4] hover:text-white flex items-center justify-center text-[10px] transition-colors border border-[#25314a]"
+          class="w-5 h-5 rounded-full bg-card hover:bg-red-500 text-text-muted hover:text-white flex items-center justify-center text-[10px] transition-colors border border-line"
           title="Take back 1 gold coin"
           @click="handleRemove('gold', $event)"
         >
           <Minus class="w-3 h-3" />
         </span>
-        <span v-else class="text-[10px] text-[#8fa3c4] opacity-60">1pt</span>
+        <span v-else class="text-[10px] text-text-muted opacity-60">1pt</span>
       </button>
 
       <!-- 2. Red Coin Button (2pt Super Vote) -->
@@ -246,28 +246,28 @@ const visibleRedTokens = computed(() => Math.min(props.card.totalRed, 6))
         :class="[
           'py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-between border cursor-pointer select-none transition-all duration-200 active:scale-95 group/btn',
           card.myRed > 0
-            ? 'bg-[#ef4444]/20 border-[#ef4444]/60 text-[#ef4444] shadow-sm'
+            ? 'bg-red-500/20 border-red-500/60 text-red-500 shadow-sm'
             : myRedRemaining > 0
-              ? 'bg-[#0b1220] hover:bg-[#ef4444]/15 text-[#d0ebff] hover:text-[#ef4444] border-[#25314a] hover:border-[#ef4444]/40'
-              : 'bg-[#0b1220]/50 text-[#8fa3c4]/30 border-[#25314a] cursor-not-allowed opacity-40',
+              ? 'bg-canvas hover:bg-red-500/15 text-sky-soft hover:text-red-500 border-line hover:border-red-500/40'
+              : 'bg-canvas/50 text-text-muted/30 border-line cursor-not-allowed opacity-40',
         ]"
         @click="handleDrop('red')"
       >
         <span class="flex items-center gap-1.5">
-          <Flame class="w-3.5 h-3.5 text-[#ef4444]" />
+          <Flame class="w-3.5 h-3.5 text-red-500" />
           <span>{{ card.myRed > 0 ? `${card.myRed}` : '+1' }}</span>
         </span>
 
         <!-- Embedded Minus Retract Pill (Appears when you have placed a coin) -->
         <span
           v-if="card.myRed > 0"
-          class="w-5 h-5 rounded-full bg-[#121a2b] hover:bg-[#ef4444] text-[#8fa3c4] hover:text-white flex items-center justify-center text-[10px] transition-colors border border-[#25314a]"
+          class="w-5 h-5 rounded-full bg-card hover:bg-red-500 text-text-muted hover:text-white flex items-center justify-center text-[10px] transition-colors border border-line"
           title="Take back 1 red coin"
           @click="handleRemove('red', $event)"
         >
           <Minus class="w-3 h-3" />
         </span>
-        <span v-else class="text-[10px] text-[#8fa3c4] opacity-60">2pt</span>
+        <span v-else class="text-[10px] text-text-muted opacity-60">2pt</span>
       </button>
     </div>
   </div>

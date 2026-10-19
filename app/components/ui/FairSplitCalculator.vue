@@ -98,17 +98,17 @@ const splitCalculations = computed(() => {
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
     <!-- Left Column: Expense Log & Add Form -->
     <div class="lg:col-span-7 space-y-5">
-      <div class="bg-[#121a2b] border border-[#25314a] rounded-[16px] p-5 sm:p-6">
+      <div class="bg-card border border-line rounded-[16px] p-5 sm:p-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-bold text-[#eaf2ff]">Shared Group Expenses</h3>
-            <p class="text-xs text-[#8fa3c4]">
+            <h3 class="text-lg font-bold text-text-primary">Shared Group Expenses</h3>
+            <p class="text-xs text-text-muted">
               Log who paid for what — we’ll calculate the minimum transfers needed.
             </p>
           </div>
           <div class="text-right">
-            <div class="text-xs text-[#8fa3c4] font-mono">Total Group Bill</div>
-            <div class="text-xl font-black text-[#d0ebff] font-mono">
+            <div class="text-xs text-text-muted font-mono">Total Group Bill</div>
+            <div class="text-xl font-black text-sky-soft font-mono">
               ${{ splitCalculations.totalSpent.toFixed(2) }}
             </div>
           </div>
@@ -116,14 +116,14 @@ const splitCalculations = computed(() => {
 
         <!-- Add Expense Inline Form -->
         <form
-          class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 mb-6 bg-[#0b1220] p-3 rounded-xl border border-[#25314a]"
+          class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 mb-6 bg-canvas p-3 rounded-xl border border-line"
           @submit.prevent="handleSubmit"
         >
           <input
             v-model="title"
             type="text"
             placeholder="Item (e.g. Hotpot Bill, Taxi)"
-            class="sm:col-span-5 bg-[#121a2b] border border-[#25314a] rounded-xl px-3 py-2 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-1 focus:ring-[#74b9ff]"
+            class="sm:col-span-5 bg-card border border-line rounded-xl px-3 py-2 text-xs text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-1 focus:ring-sky-end"
             required
           />
           <input
@@ -131,12 +131,12 @@ const splitCalculations = computed(() => {
             type="number"
             step="0.01"
             placeholder="$ Amount"
-            class="sm:col-span-3 bg-[#121a2b] border border-[#25314a] rounded-xl px-3 py-2 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-1 focus:ring-[#74b9ff]"
+            class="sm:col-span-3 bg-card border border-line rounded-xl px-3 py-2 text-xs text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-1 focus:ring-sky-end"
             required
           />
           <select
             v-model="paidBy"
-            class="sm:col-span-2 bg-[#121a2b] border border-[#25314a] rounded-xl px-2 py-2 text-xs text-[#eaf2ff] focus:outline-none"
+            class="sm:col-span-2 bg-card border border-line rounded-xl px-2 py-2 text-xs text-text-primary focus:outline-none"
           >
             <option v-for="p in participants.slice(0, 5)" :key="p.id" :value="p.id">
               {{ p.emoji }} {{ p.name }}
@@ -144,7 +144,7 @@ const splitCalculations = computed(() => {
           </select>
           <button
             type="submit"
-            class="sm:col-span-2 bg-sky-gradient text-[#0b1220] font-bold text-xs rounded-xl py-2 transition-all hover:opacity-95 active:scale-98 shadow-sm cursor-pointer"
+            class="sm:col-span-2 bg-sky-gradient text-canvas font-bold text-xs rounded-xl py-2 transition-all hover:opacity-95 active:scale-98 shadow-sm cursor-pointer"
           >
             + Add Bill
           </button>
@@ -155,26 +155,26 @@ const splitCalculations = computed(() => {
           <div
             v-for="exp in room.expenses"
             :key="exp.id"
-            class="flex items-center justify-between p-3.5 rounded-xl bg-[#0b1220] border border-[#25314a]"
+            class="flex items-center justify-between p-3.5 rounded-xl bg-canvas border border-line"
           >
             <div class="flex items-center gap-3">
               <div
-                class="w-9 h-9 rounded-xl bg-[#121a2b] border border-[#25314a] flex items-center justify-center text-base"
+                class="w-9 h-9 rounded-xl bg-card border border-line flex items-center justify-center text-base"
               >
                 {{ participants.find(p => p.id === exp.paidBy)?.emoji || '👤' }}
               </div>
               <div>
-                <div class="text-sm font-bold text-[#eaf2ff]">{{ exp.title }}</div>
-                <div class="text-xs text-[#8fa3c4]">
+                <div class="text-sm font-bold text-text-primary">{{ exp.title }}</div>
+                <div class="text-xs text-text-muted">
                   Paid by
-                  <span class="text-[#d0ebff] font-medium">
+                  <span class="text-sky-soft font-medium">
                     {{ participants.find(p => p.id === exp.paidBy)?.name || 'Member' }}
                   </span>
                   • Split equally ({{ exp.splitAmong.length }} ways)
                 </div>
               </div>
             </div>
-            <div class="text-base font-extrabold text-[#eaf2ff] font-mono">
+            <div class="text-base font-extrabold text-text-primary font-mono">
               ${{ exp.amount.toFixed(2) }}
             </div>
           </div>
@@ -184,17 +184,17 @@ const splitCalculations = computed(() => {
 
     <!-- Right Column: Smart Minimum Transfers & QR Code Settler -->
     <div class="lg:col-span-5">
-      <div class="bg-[#121a2b] border border-[#25314a] rounded-[16px] p-5 sm:p-6">
+      <div class="bg-card border border-line rounded-[16px] p-5 sm:p-6">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-[#d0ebff] font-mono">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-sky-soft font-mono">
               Smart Debt Simplifier
             </span>
-            <h3 class="text-lg font-bold text-[#eaf2ff]">Who Pays Whom</h3>
+            <h3 class="text-lg font-bold text-text-primary">Who Pays Whom</h3>
           </div>
           <div class="text-right">
-            <span class="text-[11px] text-[#8fa3c4] font-mono">Each Person’s Share</span>
-            <div class="text-sm font-bold text-[#eaf2ff] font-mono">
+            <span class="text-[11px] text-text-muted font-mono">Each Person’s Share</span>
+            <div class="text-sm font-bold text-text-primary font-mono">
               ~${{ splitCalculations.perPersonShare.toFixed(2) }} / person
             </div>
           </div>
@@ -203,7 +203,7 @@ const splitCalculations = computed(() => {
         <div class="space-y-3">
           <div
             v-if="splitCalculations.transfers.length === 0"
-            class="text-center py-8 text-xs text-[#8fa3c4]"
+            class="text-center py-8 text-xs text-text-muted"
           >
             Everyone is completely settled up!
           </div>
@@ -214,19 +214,19 @@ const splitCalculations = computed(() => {
             class="p-4 rounded-xl border transition-all"
             :class="[
               settledKeys[t.key]
-                ? 'bg-[#0b1220] border-[#3fb950]/50 opacity-80'
-                : 'bg-[#0b1220] border-[#25314a]',
+                ? 'bg-canvas border-emerald/50 opacity-80'
+                : 'bg-canvas border-line',
             ]"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-2 text-xs">
                 <span class="text-base">{{ t.from.emoji }}</span>
-                <span class="font-bold text-[#eaf2ff]">{{ t.from.name }}</span>
-                <ArrowRight class="w-3.5 h-3.5 text-[#8fa3c4]" />
+                <span class="font-bold text-text-primary">{{ t.from.name }}</span>
+                <ArrowRight class="w-3.5 h-3.5 text-text-muted" />
                 <span class="text-base">{{ t.to.emoji }}</span>
-                <span class="font-bold text-[#d0ebff]">{{ t.to.name }}</span>
+                <span class="font-bold text-sky-soft">{{ t.to.name }}</span>
               </div>
-              <span class="text-sm font-black font-mono text-[#3fb950]">
+              <span class="text-sm font-black font-mono text-emerald">
                 ${{ t.amount.toFixed(2) }}
               </span>
             </div>
@@ -234,10 +234,10 @@ const splitCalculations = computed(() => {
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="flex-1 py-1.5 px-3 rounded-xl bg-[#121a2b] hover:bg-[#25314a] text-[#eaf2ff] font-semibold text-xs flex items-center justify-center gap-1.5 border border-[#25314a] cursor-pointer transition-colors"
+                class="flex-1 py-1.5 px-3 rounded-xl bg-card hover:bg-line text-text-primary font-semibold text-xs flex items-center justify-center gap-1.5 border border-line cursor-pointer transition-colors"
                 @click="emit('openQr', t)"
               >
-                <QrCode class="w-3.5 h-3.5 text-[#d0ebff]" />
+                <QrCode class="w-3.5 h-3.5 text-sky-soft" />
                 <span>Scan QR to Pay</span>
               </button>
 
@@ -246,8 +246,8 @@ const splitCalculations = computed(() => {
                 class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors flex items-center gap-1 cursor-pointer"
                 :class="[
                   settledKeys[t.key]
-                    ? 'bg-[#0b1220] border-[#3fb950] text-[#3fb950]'
-                    : 'bg-[#121a2b] border-[#25314a] text-[#8fa3c4] hover:text-[#eaf2ff]',
+                    ? 'bg-canvas border-emerald text-emerald'
+                    : 'bg-card border-line text-text-muted hover:text-text-primary',
                 ]"
                 @click="emit('toggleSettled', t.key)"
               >

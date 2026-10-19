@@ -376,20 +376,20 @@ function handleLeaveLobby() {
 
 <template>
   <div
-    class="min-h-screen bg-[#0b1220] text-[#eaf2ff] flex flex-col font-sans selection:bg-[#74b9ff]/30 selection:text-[#d0ebff] relative"
+    class="min-h-screen bg-canvas text-text-primary flex flex-col font-sans selection:bg-sky-end/30 selection:text-sky-soft relative"
   >
     <!-- Subtle top radial sky glow per design requirement -->
     <div
-      class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] pointer-events-none z-0 rounded-full bg-radial from-[#a5d8ff]/10 via-[#74b9ff]/5 to-transparent blur-2xl"
+      class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] pointer-events-none z-0 rounded-full bg-radial from-sky-start/10 via-sky-end/5 to-transparent blur-2xl"
     />
 
     <!-- Global Toast Notification -->
     <Transition name="modal">
       <div
         v-if="toastMessage"
-        class="modal-dialog fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#121a2b] border border-[#74b9ff]/60 text-[#d0ebff] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold shadow-sky-glow"
+        class="modal-dialog fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-card border border-sky-end/60 text-sky-soft px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold shadow-sky-glow"
       >
-        <Sparkles class="w-4 h-4 text-[#74b9ff] shrink-0" />
+        <Sparkles class="w-4 h-4 text-sky-end shrink-0" />
         <span>{{ toastMessage }}</span>
       </div>
     </Transition>
@@ -398,12 +398,12 @@ function handleLeaveLobby() {
     <Transition name="modal">
       <div
         v-if="isJoining"
-        class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3"
+        class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3"
       >
         <div
-          class="w-10 h-10 border-3 border-[#74b9ff] border-t-transparent rounded-full animate-spin"
+          class="w-10 h-10 border-[3px] border-sky-end border-t-transparent rounded-full animate-spin"
         />
-        <p class="text-xs font-semibold text-[#d0ebff]">Connecting to lobby...</p>
+        <p class="text-xs font-semibold text-sky-soft">Connecting to lobby...</p>
       </div>
     </Transition>
 
@@ -431,32 +431,32 @@ function handleLeaveLobby() {
       >
         <!-- Clean Phase Bar & Action -->
         <div
-          class="mb-4 sm:mb-6 flex items-center justify-between gap-2.5 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-[#121a2b]/80 border border-[#25314a]"
+          class="mb-4 sm:mb-6 flex items-center justify-between gap-2.5 sm:gap-3 p-2.5 sm:px-4 sm:py-3 rounded-2xl bg-card/80 border border-line"
         >
           <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
             <div
               :class="[
                 'w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-xs sm:text-sm border shrink-0',
                 currentRoom.phase === 'ideas'
-                  ? 'bg-[#74b9ff]/15 border-[#74b9ff]/30 text-[#74b9ff]'
+                  ? 'bg-sky-end/15 border-sky-end/30 text-sky-end'
                   : currentRoom.phase === 'voting'
-                    ? 'bg-[#f5c242]/15 border-[#f5c242]/30 text-[#f5c242]'
-                    : 'bg-[#3fb950]/15 border-[#3fb950]/30 text-[#3fb950]',
+                    ? 'bg-gold/15 border-gold/30 text-gold'
+                    : 'bg-emerald/15 border-emerald/30 text-emerald',
               ]"
             >
               <Lightbulb
                 v-if="currentRoom.phase === 'ideas'"
-                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#74b9ff]"
+                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-end"
               />
               <Coins
                 v-else-if="currentRoom.phase === 'voting'"
-                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#f5c242]"
+                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gold"
               />
-              <Trophy v-else class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#3fb950]" />
+              <Trophy v-else class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald" />
             </div>
 
             <div class="min-w-0">
-              <span class="text-xs sm:text-sm font-bold text-[#eaf2ff] block truncate">
+              <span class="text-xs sm:text-sm font-bold text-text-primary block truncate">
                 {{
                   currentRoom.phase === 'ideas'
                     ? 'Brainstorming Options'
@@ -465,7 +465,7 @@ function handleLeaveLobby() {
                       : 'Winner Decided!'
                 }}
               </span>
-              <span class="text-[11px] text-[#8fa3c4] hidden md:block">
+              <span class="text-[11px] text-text-muted hidden md:block">
                 {{
                   currentRoom.phase === 'ideas'
                     ? 'Anyone can propose cards. The host starts voting when ready.'
@@ -481,7 +481,7 @@ function handleLeaveLobby() {
           <button
             v-if="currentRoom.phase !== 'finished'"
             type="button"
-            class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0"
+            class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0"
             @click="handleOpenAddIdea"
           >
             <Plus class="w-3.5 h-3.5" />
@@ -493,29 +493,29 @@ function handleLeaveLobby() {
         <Transition name="modal">
           <div
             v-if="currentRoom.phase === 'finished' && winningCard"
-            class="modal-dialog mb-6 sm:mb-8 p-4 sm:p-8 rounded-[20px] bg-gradient-to-b from-[#121a2b] to-[#0b1220] border-2 border-[#74b9ff] shadow-2xl shadow-[#74b9ff]/25 text-center relative overflow-hidden animate-pulse-glow"
+            class="modal-dialog mb-6 sm:mb-8 p-4 sm:p-8 rounded-[20px] bg-gradient-to-b from-card to-canvas border-2 border-sky-end shadow-2xl shadow-sky-end/25 text-center relative overflow-hidden animate-pulse-glow"
           >
             <!-- Background Shimmer Sheen -->
             <div class="absolute inset-0 animate-winner-shimmer pointer-events-none" />
 
             <div
-              class="inline-flex items-center justify-center p-2.5 sm:p-3.5 rounded-2xl bg-sky-gradient text-[#0b1220] mb-2.5 sm:mb-3 shadow-lg shadow-[#74b9ff]/40 animate-trophy-wiggle relative z-10"
+              class="inline-flex items-center justify-center p-2.5 sm:p-3.5 rounded-2xl bg-sky-gradient text-canvas mb-2.5 sm:mb-3 shadow-lg shadow-sky-end/40 animate-trophy-wiggle relative z-10"
             >
               <Trophy class="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <h2 class="text-lg sm:text-2xl font-black text-[#eaf2ff] mb-1 relative z-10">
+            <h2 class="text-lg sm:text-2xl font-black text-text-primary mb-1 relative z-10">
               Winning Decision: {{ winningCard.title }}!
             </h2>
-            <p class="text-xs sm:text-sm text-[#8fa3c4] max-w-md mx-auto mb-3 relative z-10">
+            <p class="text-xs sm:text-sm text-text-muted max-w-md mx-auto mb-3 relative z-10">
               Winner with
-              <span class="text-[#74b9ff] font-bold">
+              <span class="text-sky-end font-bold">
                 {{ winningCard.totalScore }} total points
               </span>
               ({{ winningCard.totalGold }} Gold 🪙, {{ winningCard.totalRed }} Red 🔴)!
             </p>
             <div class="flex items-center justify-center gap-2 relative z-10">
               <span
-                class="text-xs px-3 py-1 rounded-full bg-[#0b1220] border border-[#25314a] text-[#8fa3c4]"
+                class="text-xs px-3 py-1 rounded-full bg-canvas border border-line text-text-muted"
               >
                 Proposed by {{ winningCard.authorEmoji }} {{ winningCard.authorName }}
               </span>
@@ -551,21 +551,21 @@ function handleLeaveLobby() {
         <!-- Empty State if no cards added yet -->
         <div
           v-else
-          class="p-12 text-center rounded-[16px] bg-[#121a2b] border border-dashed border-[#25314a] flex flex-col items-center justify-center"
+          class="p-12 text-center rounded-[16px] bg-card border border-dashed border-line flex flex-col items-center justify-center"
         >
           <div
-            class="w-14 h-14 rounded-2xl bg-[#0b1220] border border-[#25314a] flex items-center justify-center text-2xl mb-3 shadow-inner"
+            class="w-14 h-14 rounded-2xl bg-canvas border border-line flex items-center justify-center text-2xl mb-3 shadow-inner"
           >
             💡
           </div>
-          <h3 class="text-base font-bold text-[#eaf2ff] mb-1">No Card Ideas Yet</h3>
-          <p class="text-xs text-[#8fa3c4] max-w-sm mb-4">
+          <h3 class="text-base font-bold text-text-primary mb-1">No Card Ideas Yet</h3>
+          <p class="text-xs text-text-muted max-w-sm mb-4">
             Be the first to propose an option! Once added, your friends can drop coins to decide
             together.
           </p>
           <button
             type="button"
-            class="px-4 py-2.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            class="px-4 py-2.5 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow-md transition-all hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
             @click="handleOpenAddIdea"
           >
             <Plus class="w-4 h-4" />
@@ -591,25 +591,23 @@ function handleLeaveLobby() {
     <!-- =================================================== -->
     <template v-else>
       <!-- Navigation Header -->
-      <nav
-        class="w-full border-b border-[#25314a]/80 bg-[#121a2b]/60 backdrop-blur-md sticky top-0 z-30"
-      >
+      <nav class="w-full border-b border-line/80 bg-card/60 backdrop-blur-md sticky top-0 z-30">
         <div
           class="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between"
         >
           <!-- Logo & Brand -->
           <div class="flex items-center gap-2 sm:gap-2.5">
             <div
-              class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center text-base sm:text-lg font-black shadow-md shrink-0"
+              class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center text-base sm:text-lg font-black shadow-md shrink-0"
             >
               🪙
             </div>
             <div>
-              <span class="text-sm sm:text-base font-bold text-[#eaf2ff] tracking-tight"
+              <span class="text-sm sm:text-base font-bold text-text-primary tracking-tight"
                 >CoinDrop</span
               >
               <span
-                class="text-[9px] sm:text-[10px] ml-1 sm:ml-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-[#74b9ff]/15 text-[#74b9ff] border border-[#74b9ff]/30 font-semibold uppercase tracking-wider"
+                class="text-[9px] sm:text-[10px] ml-1 sm:ml-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-sky-end/15 text-sky-end border border-sky-end/30 font-semibold uppercase tracking-wider"
               >
                 Multiplayer
               </span>
@@ -619,14 +617,14 @@ function handleLeaveLobby() {
           <!-- Persona Selector Pill -->
           <button
             type="button"
-            class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs transition-all cursor-pointer shadow-sm hover:border-[#74b9ff]/40 shrink-0"
+            class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-card hover:bg-line border border-line text-xs transition-all cursor-pointer shadow-sm hover:border-sky-end/40 shrink-0"
             @click="handleOpenEditIdentity"
           >
             <span class="text-sm sm:text-base">{{ identity?.emoji || '🦫' }}</span>
-            <span class="font-semibold text-[#eaf2ff] max-w-[80px] xs:max-w-[120px] truncate">
+            <span class="font-semibold text-text-primary max-w-[80px] xs:max-w-[120px] truncate">
               {{ identity?.name || 'Chill Capybara' }}
             </span>
-            <span class="text-[10px] text-[#74b9ff] font-medium hidden sm:inline">Change</span>
+            <span class="text-[10px] text-sky-end font-medium hidden sm:inline">Change</span>
           </button>
         </div>
       </nav>
@@ -638,26 +636,24 @@ function handleLeaveLobby() {
         <!-- Hero Header -->
         <div class="text-center mb-6 sm:mb-10">
           <div
-            class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#121a2b] border border-[#25314a] text-[11px] sm:text-xs text-[#d0ebff] mb-3 sm:mb-4 shadow-sm"
+            class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-card border border-line text-[11px] sm:text-xs text-sky-soft mb-3 sm:mb-4 shadow-sm"
           >
-            <span class="w-2 h-2 rounded-full bg-[#3fb950] animate-pulse shrink-0" />
+            <span class="w-2 h-2 rounded-full bg-emerald animate-pulse shrink-0" />
             <span class="font-medium tracking-wide"
               >Live Multiplayer Decision Lounge • No Signup Required</span
             >
           </div>
 
           <h1
-            class="text-2xl xs:text-3xl sm:text-5xl font-black text-[#eaf2ff] tracking-tight leading-tight mb-2 sm:mb-3"
+            class="text-2xl xs:text-3xl sm:text-5xl font-black text-text-primary tracking-tight leading-tight mb-2 sm:mb-3"
           >
             Group decisions made fun.<br />
-            <span
-              class="text-transparent bg-clip-text bg-gradient-to-r from-[#a5d8ff] to-[#74b9ff]"
-            >
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-start to-sky-end">
               Just drop your coins.
             </span>
           </h1>
 
-          <p class="text-xs sm:text-base text-[#8fa3c4] max-w-xl mx-auto leading-relaxed">
+          <p class="text-xs sm:text-base text-text-muted max-w-xl mx-auto leading-relaxed">
             Create a cozy lobby, invite friends via Telegram or code, brainstorm card ideas, and
             drop your gold & red coins to vote live.
           </p>
@@ -667,7 +663,7 @@ function handleLeaveLobby() {
         <div class="max-w-md mx-auto w-full mb-8">
           <!-- Segmented Tab Switcher with Apple-grade Sliding Indicator -->
           <div
-            class="relative flex items-center p-1 rounded-2xl bg-[#121a2b] border border-[#25314a] mb-4 sm:mb-5 shadow-lg select-none"
+            class="relative flex items-center p-1 rounded-2xl bg-card border border-line mb-4 sm:mb-5 shadow-lg select-none"
           >
             <!-- Apple-style Sliding Indicator Pill -->
             <div
@@ -682,7 +678,7 @@ function handleLeaveLobby() {
               type="button"
               class="relative z-10 flex-1 py-2 text-xs font-bold rounded-xl transition-colors duration-250 cursor-pointer flex items-center justify-center gap-1.5"
               :class="
-                landingTab === 'create' ? 'text-[#0b1220]' : 'text-[#8fa3c4] hover:text-[#eaf2ff]'
+                landingTab === 'create' ? 'text-canvas' : 'text-text-muted hover:text-text-primary'
               "
               @click="setLandingTab('create')"
             >
@@ -693,7 +689,7 @@ function handleLeaveLobby() {
               type="button"
               class="relative z-10 flex-1 py-2 text-xs font-bold rounded-xl transition-colors duration-250 cursor-pointer flex items-center justify-center gap-1.5"
               :class="
-                landingTab === 'join' ? 'text-[#0b1220]' : 'text-[#8fa3c4] hover:text-[#eaf2ff]'
+                landingTab === 'join' ? 'text-canvas' : 'text-text-muted hover:text-text-primary'
               "
               @click="setLandingTab('join')"
             >
@@ -704,7 +700,7 @@ function handleLeaveLobby() {
 
           <!-- Main Interactive Card with Apple-grade Box Morphing -->
           <div
-            class="box-morph overflow-hidden rounded-[20px] bg-[#121a2b] border border-[#25314a] shadow-2xl relative"
+            class="box-morph overflow-hidden rounded-[20px] bg-card border border-line shadow-2xl relative"
             :style="cardHeight ? { height: `${cardHeight}px` } : undefined"
           >
             <div ref="cardInnerRef" class="p-4 sm:p-6">
@@ -712,14 +708,14 @@ function handleLeaveLobby() {
                 <!-- 1. CREATE TAB -->
                 <div v-if="landingTab === 'create'" key="create" class="space-y-4">
                   <div>
-                    <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                    <label class="block text-xs font-bold text-text-primary mb-1.5">
                       What are you deciding?
                     </label>
                     <input
                       v-model="newRoomTitle"
                       type="text"
                       placeholder="e.g. Friday Night Hotpot 🍲"
-                      class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                      class="w-full bg-canvas border border-line rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-text-primary placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
                       @keydown.enter="handleCreateLobby"
                     />
                   </div>
@@ -730,7 +726,7 @@ function handleLeaveLobby() {
                       v-for="sug in ['Hotpot 🍲', 'BBQ 🍢', 'Movie 🍿', 'Trip 🚗', 'Boardgames 🎲']"
                       :key="sug"
                       type="button"
-                      class="px-2.5 py-1 rounded-lg bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] text-[#8fa3c4] hover:text-[#d0ebff] text-xs transition-colors cursor-pointer active:scale-95"
+                      class="px-2.5 py-1 rounded-lg bg-canvas hover:bg-line border border-line text-text-muted hover:text-sky-soft text-xs transition-colors cursor-pointer active:scale-95"
                       @click="newRoomTitle = sug"
                     >
                       {{ sug }}
@@ -739,7 +735,7 @@ function handleLeaveLobby() {
 
                   <button
                     type="button"
-                    class="w-full py-3 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
+                    class="w-full py-3 rounded-xl bg-sky-gradient text-canvas font-bold text-sm shadow-md transition-all hover:opacity-95 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-2"
                     @click="handleCreateLobby"
                   >
                     <span>Create Lobby & Drop Coins</span>
@@ -750,17 +746,17 @@ function handleLeaveLobby() {
                 <!-- 2. JOIN TAB -->
                 <div v-else key="join" class="space-y-4">
                   <div>
-                    <label class="block text-xs font-bold text-[#eaf2ff] mb-1.5">
+                    <label class="block text-xs font-bold text-text-primary mb-1.5">
                       Enter 4-Digit Room Code
                     </label>
                     <input
                       v-model="joinRoomCode"
                       type="text"
                       placeholder="e.g. 2785 or DROP-2785"
-                      class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-[#eaf2ff] uppercase font-mono tracking-wider placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+                      class="w-full bg-canvas border border-line rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-text-primary uppercase font-mono tracking-wider placeholder-text-muted/50 focus:outline-none focus:ring-2 focus:ring-sky-end"
                       @keydown.enter="handleJoinLobby"
                     />
-                    <p class="text-[11px] text-[#8fa3c4] mt-1.5">
+                    <p class="text-[11px] text-text-muted mt-1.5">
                       Tip: Or just tap the invite link sent to you in Telegram.
                     </p>
                   </div>
@@ -771,8 +767,8 @@ function handleLeaveLobby() {
                     :class="[
                       'w-full py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer',
                       joinRoomCode.trim()
-                        ? 'bg-sky-gradient text-[#0b1220] hover:opacity-95 active:scale-98'
-                        : 'bg-[#0b1220] text-[#8fa3c4]/40 border border-[#25314a] cursor-not-allowed',
+                        ? 'bg-sky-gradient text-canvas hover:opacity-95 active:scale-98'
+                        : 'bg-canvas text-text-muted/40 border border-line cursor-not-allowed',
                     ]"
                     @click="handleJoinLobby"
                   >
@@ -787,7 +783,7 @@ function handleLeaveLobby() {
           <!-- Recent Lobbies (if any) -->
           <div v-if="recentRooms.length > 0" class="mt-6 text-center">
             <span
-              class="text-[11px] font-bold uppercase tracking-wider text-[#8fa3c4]/70 block mb-2"
+              class="text-[11px] font-bold uppercase tracking-wider text-text-muted/70 block mb-2"
             >
               Recent Rooms
             </span>
@@ -796,64 +792,62 @@ function handleLeaveLobby() {
                 v-for="r in recentRooms.slice(0, 4)"
                 :key="r.id"
                 type="button"
-                class="px-3 py-1.5 rounded-full bg-[#121a2b] hover:bg-[#25314a] border border-[#25314a] text-xs text-[#d0ebff] flex items-center gap-1.5 cursor-pointer transition-colors"
+                class="px-3 py-1.5 rounded-full bg-card hover:bg-line border border-line text-xs text-sky-soft flex items-center gap-1.5 cursor-pointer transition-colors"
                 @click="handleRecentLobbyClick(r.id)"
               >
                 <span class="font-medium truncate max-w-[120px]">{{ r.title }}</span>
-                <span class="font-mono text-[10px] text-[#74b9ff]">#{{ r.id }}</span>
+                <span class="font-mono text-[10px] text-sky-end">#{{ r.id }}</span>
               </button>
             </div>
           </div>
         </div>
 
         <!-- How It Works (3-Step Micro Guide for Real Product Experience) -->
-        <div
-          class="w-full max-w-2xl mx-auto mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-[#25314a]/60"
-        >
+        <div class="w-full max-w-2xl mx-auto mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-line/60">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
               >
                 1
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Invite in 1-Click</h4>
-                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                <h4 class="text-xs font-bold text-text-primary truncate">Invite in 1-Click</h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
                   Share the 4-digit code or direct Telegram link with friends.
                 </p>
               </div>
             </div>
 
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
               >
                 2
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Pitch Card Ideas</h4>
-                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                <h4 class="text-xs font-bold text-text-primary truncate">Pitch Card Ideas</h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
                   Everyone adds food spots, movies, or activities to the board.
                 </p>
               </div>
             </div>
 
             <div
-              class="p-3 sm:p-3.5 rounded-2xl bg-[#121a2b]/70 border border-[#25314a] text-left flex items-start gap-2.5 group hover:border-[#74b9ff]/40 transition-colors"
+              class="p-3 sm:p-3.5 rounded-2xl bg-card/70 border border-line text-left flex items-start gap-2.5 group hover:border-sky-end/40 transition-colors"
             >
               <div
-                class="w-7 h-7 rounded-xl bg-sky-gradient text-[#0b1220] flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
+                class="w-7 h-7 rounded-xl bg-sky-gradient text-canvas flex items-center justify-center font-black text-xs shrink-0 shadow-sm"
               >
                 3
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-[#eaf2ff] truncate">Drop Coins & Decide</h4>
-                <p class="text-[11px] text-[#8fa3c4] mt-0.5 leading-relaxed">
+                <h4 class="text-xs font-bold text-text-primary truncate">Drop Coins & Decide</h4>
+                <p class="text-[11px] text-text-muted mt-0.5 leading-relaxed">
                   Vote in real-time with gold and red coins. Watch the winner emerge!
                 </p>
               </div>
@@ -864,23 +858,23 @@ function handleLeaveLobby() {
 
       <!-- Real Product Clean Footer -->
       <footer
-        class="w-full border-t border-[#25314a]/60 py-5 sm:py-6 px-4 mt-auto relative z-10 text-center"
+        class="w-full border-t border-line/60 py-5 sm:py-6 px-4 mt-auto relative z-10 text-center"
       >
         <div
-          class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-[#8fa3c4]"
+          class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-text-muted"
         >
           <div class="flex items-center gap-2">
             <span class="text-sm">🪙</span>
-            <span class="font-bold text-[#eaf2ff]">CoinDrop</span>
-            <span class="text-[#25314a]">•</span>
+            <span class="font-bold text-text-primary">CoinDrop</span>
+            <span class="text-line">•</span>
             <span>Zero-signup multiplayer decision lounge</span>
           </div>
           <div class="flex items-center gap-3 text-[11px]">
-            <span class="flex items-center gap-1 text-[#3fb950]">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#3fb950] animate-pulse" />
+            <span class="flex items-center gap-1 text-emerald">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
               <span>Realtime</span>
             </span>
-            <span class="text-[#25314a]">•</span>
+            <span class="text-line">•</span>
             <span>Ephemeral • Auto-clears on close</span>
           </div>
         </div>
