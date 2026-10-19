@@ -1,14 +1,7 @@
-<script setup lang="ts">
-import HeaderNav from '~/components/ui/HeaderNav.vue'
-</script>
-
 <template>
   <div
-    class="min-h-screen bg-canvas-glow text-[#eaf2ff] overflow-hidden select-none relative font-sans"
+    class="min-h-screen bg-canvas-glow text-[#eaf2ff] font-sans selection:bg-[#74b9ff]/30 selection:text-[#d0ebff]"
   >
-    <HeaderNav />
-    <main class="w-full h-screen relative">
-      <slot />
-    </main>
+    <slot />
   </div>
 </template>
