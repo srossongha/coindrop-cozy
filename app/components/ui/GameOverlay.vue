@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { coins, coinsDroppedCount, totalScore, dropCoin, resetCoins } = useCoinDrop()
+const { returnToHome } = useRoom()
 
 function handleKeyDown(e: KeyboardEvent) {
   if (e.code === 'Space') {
@@ -21,28 +22,38 @@ onUnmounted(() => {
 <template>
   <div class="fixed inset-0 pointer-events-none z-10 flex flex-col justify-between p-6">
     <!-- Spacer for header -->
-    <div class="h-16"></div>
+    <div class="h-16" />
 
-    <!-- Stats HUD -->
-    <div
-      class="self-start pointer-events-auto backdrop-blur-md bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 shadow-xl"
-    >
-      <div class="flex items-center space-x-6">
-        <div>
-          <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Total Score</p>
-          <p class="text-2xl font-black text-amber-400">{{ totalScore }}</p>
-        </div>
-        <div class="h-8 w-px bg-slate-700/60"></div>
-        <div>
-          <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Coins Dropped</p>
-          <p class="text-2xl font-black text-white">{{ coinsDroppedCount }}</p>
-        </div>
-        <div class="h-8 w-px bg-slate-700/60"></div>
-        <div>
-          <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Active</p>
-          <p class="text-2xl font-black text-cyan-400">{{ coins.length }}</p>
+    <!-- Stats HUD & Return to Home -->
+    <div class="flex items-center justify-between w-full max-w-4xl mx-auto">
+      <div
+        class="pointer-events-auto backdrop-blur-md bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 shadow-xl"
+      >
+        <div class="flex items-center space-x-6">
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Total Score</p>
+            <p class="text-2xl font-black text-amber-400">{{ totalScore }}</p>
+          </div>
+          <div class="h-8 w-px bg-slate-700/60" />
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Coins Dropped</p>
+            <p class="text-2xl font-black text-white">{{ coinsDroppedCount }}</p>
+          </div>
+          <div class="h-8 w-px bg-slate-700/60" />
+          <div>
+            <p class="text-xs uppercase tracking-wider text-slate-400 font-mono">Active</p>
+            <p class="text-2xl font-black text-cyan-400">{{ coins.length }}</p>
+          </div>
         </div>
       </div>
+
+      <button
+        type="button"
+        class="pointer-events-auto px-4 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold backdrop-blur-md transition-colors cursor-pointer flex items-center space-x-1.5"
+        @click="returnToHome"
+      >
+        <span>← Back to Home</span>
+      </button>
     </div>
 
     <!-- Bottom Controls & Hints -->
