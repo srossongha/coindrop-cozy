@@ -16,9 +16,34 @@
   --radius-card: 16px;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--color-canvas);
   color: var(--color-text-primary);
+  touch-action: manipulation;
+  overflow-x: hidden;
+  min-height: 100dvh;
+}
+
+/* Sleek dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #25314a;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #74b9ff;
 }
 
 @utility bg-sky-gradient {

@@ -35,7 +35,7 @@ function getSafeLink(url?: string): string {
 <template>
   <div
     :class="[
-      'relative rounded-[16px] p-5 flex flex-col justify-between transition-all duration-300 group',
+      'relative rounded-[16px] p-3.5 sm:p-5 flex flex-col justify-between transition-all duration-300 group',
       isWinner
         ? 'bg-[#121a2b] p-[2px] rounded-[16px] bg-sky-gradient shadow-2xl shadow-[#74b9ff]/30 scale-[1.02] animate-pulse-glow'
         : card.isLeader && !isFinishedPhase
@@ -47,7 +47,7 @@ function getSafeLink(url?: string): string {
     <div
       :class="[
         'w-full h-full rounded-[14px] flex flex-col justify-between',
-        isWinner ? 'bg-[#121a2b] p-5' : '',
+        isWinner ? 'bg-[#121a2b] p-3.5 sm:p-5' : '',
       ]"
     >
       <!-- Top Meta Bar: Category, Leader / Winner Trophy, and Edit button -->

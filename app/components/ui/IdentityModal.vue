@@ -61,10 +61,10 @@ function handleSave() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
   >
     <div
-      class="modal-dialog w-full max-w-md bg-[#121a2b] border border-[#25314a] rounded-[20px] p-6 shadow-2xl relative"
+      class="modal-dialog w-full max-w-md max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative"
     >
       <!-- Close button (only if not mandatory first-join) -->
       <button
@@ -77,18 +77,18 @@ function handleSave() {
       </button>
 
       <!-- Header -->
-      <div class="flex items-center gap-3 mb-2">
+      <div class="flex items-center gap-3 mb-2 pr-6">
         <div
-          class="w-12 h-12 rounded-2xl bg-[#0b1220] border-2 border-[#74b9ff]/40 flex items-center justify-center text-2xl shadow-inner"
+          class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#0b1220] border-2 border-[#74b9ff]/40 flex items-center justify-center text-xl sm:text-2xl shadow-inner shrink-0"
         >
           {{ currentEmoji }}
         </div>
         <div>
-          <h2 class="text-base font-bold text-[#eaf2ff] flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-bold text-[#eaf2ff] flex items-center gap-2">
             <span>{{ title }}</span>
             <Sparkles class="w-4 h-4 text-[#74b9ff]" />
           </h2>
-          <p class="text-xs text-[#8fa3c4]">
+          <p class="text-[11px] sm:text-xs text-[#8fa3c4]">
             {{ description }}
           </p>
         </div>
@@ -99,7 +99,7 @@ function handleSave() {
         <span class="text-xs font-semibold text-[#8fa3c4]">Need inspiration?</span>
         <button
           type="button"
-          class="text-xs text-[#74b9ff] hover:text-[#d0ebff] flex items-center gap-1 font-semibold cursor-pointer"
+          class="text-xs text-[#74b9ff] hover:text-[#d0ebff] flex items-center gap-1 font-semibold cursor-pointer active:scale-95"
           @click="pickRandomPersona"
         >
           <Shuffle class="w-3.5 h-3.5" />
@@ -112,13 +112,13 @@ function handleSave() {
         <label class="block text-[11px] font-semibold text-[#8fa3c4] uppercase tracking-wider mb-2">
           Select Mascot Emoji
         </label>
-        <div class="grid grid-cols-5 gap-2">
+        <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
           <button
             v-for="em in EMOJI_OPTIONS"
             :key="em"
             type="button"
             :class="[
-              'p-2 rounded-xl text-xl flex items-center justify-center transition-all cursor-pointer',
+              'p-2 rounded-xl text-xl flex items-center justify-center transition-all cursor-pointer active:scale-95',
               currentEmoji === em
                 ? 'bg-[#0b1220] border-2 border-[#74b9ff] scale-105 shadow-md shadow-[#74b9ff]/20'
                 : 'bg-[#0b1220] border border-[#25314a] hover:border-[#8fa3c4]/50 opacity-80 hover:opacity-100',
@@ -142,7 +142,7 @@ function handleSave() {
           type="text"
           maxlength="24"
           placeholder="e.g. Chill Capybara"
-          class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+          class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
           @keydown.enter="handleSave"
         />
       </div>

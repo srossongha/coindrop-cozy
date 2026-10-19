@@ -101,41 +101,43 @@ function handleEditIdentityFromRoster() {
   <header
     class="w-full bg-[#121a2b]/90 backdrop-blur-xl border-b border-[#25314a] sticky top-0 z-40 transition-all"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+    <div
+      class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3"
+    >
       <!-- Left: Back Button, Room Title & Live Indicator -->
-      <div class="flex items-center gap-3 min-w-0">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           type="button"
-          class="p-2 rounded-xl bg-[#0b1220] hover:bg-[#25314a] text-[#8fa3c4] hover:text-[#eaf2ff] border border-[#25314a] cursor-pointer transition-colors shrink-0"
+          class="p-1.5 sm:p-2 rounded-xl bg-[#0b1220] hover:bg-[#25314a] text-[#8fa3c4] hover:text-[#eaf2ff] border border-[#25314a] cursor-pointer transition-colors shrink-0"
           title="Leave Lobby"
           @click="emit('leave')"
         >
-          <ArrowLeft class="w-4 h-4" />
+          <ArrowLeft class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
 
         <div class="min-w-0">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2">
             <h1
-              class="text-sm sm:text-base font-bold text-[#eaf2ff] truncate max-w-[180px] sm:max-w-xs md:max-w-md"
+              class="text-xs sm:text-base font-bold text-[#eaf2ff] truncate max-w-[95px] xs:max-w-[140px] sm:max-w-xs md:max-w-md"
             >
               {{ room.title }}
             </h1>
             <span
               v-if="isHost"
-              class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#f5c242]/20 text-[#f5c242] border border-[#f5c242]/40 shrink-0"
+              class="px-1.5 py-0.2 rounded text-[9px] sm:text-[10px] font-bold bg-[#f5c242]/20 text-[#f5c242] border border-[#f5c242]/40 shrink-0"
             >
               Host
             </span>
           </div>
 
-          <div class="flex items-center gap-2 text-[11px] text-[#8fa3c4]">
-            <span class="inline-flex items-center gap-1.5 font-medium">
+          <div class="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-[#8fa3c4]">
+            <span class="inline-flex items-center gap-1 font-medium">
               <span
-                class="w-2 h-2 rounded-full"
+                class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full"
                 :class="isConnected ? 'bg-[#3fb950] animate-pulse' : 'bg-amber-400'"
               />
               <span :class="isConnected ? 'text-[#3fb950]' : 'text-amber-400'">
-                {{ isConnected ? 'Live' : 'Connecting...' }}
+                {{ isConnected ? 'Live' : 'Connecting' }}
               </span>
             </span>
 
@@ -147,11 +149,11 @@ function handleEditIdentityFromRoster() {
       </div>
 
       <!-- Right: Consolidated Controls (Avatars Stack, Share Button, Primary Host Action & Menu) -->
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <!-- 1. Participant Avatar Stack (Clickable to open roster & edit persona) -->
         <button
           type="button"
-          class="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] hover:border-[#74b9ff]/40 transition-all cursor-pointer group"
+          class="flex items-center gap-1 p-1 sm:px-2.5 sm:py-1 rounded-xl bg-[#0b1220] hover:bg-[#25314a] border border-[#25314a] hover:border-[#74b9ff]/40 transition-all cursor-pointer group"
           title="View friends in lobby & edit persona"
           @click="showRosterModal = true"
         >
@@ -159,7 +161,7 @@ function handleEditIdentityFromRoster() {
             <div
               v-for="p in visibleParticipants"
               :key="p.id"
-              class="w-6 h-6 rounded-full bg-[#121a2b] border border-[#25314a] flex items-center justify-center text-xs shadow-sm"
+              class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#121a2b] border border-[#25314a] flex items-center justify-center text-[11px] sm:text-xs shadow-sm"
               :title="p.name"
             >
               {{ p.emoji }}
@@ -181,7 +183,7 @@ function handleEditIdentityFromRoster() {
         <!-- 2. ONE Single Share Button (Opens Share & Telegram Modal) -->
         <button
           type="button"
-          class="px-3 py-1.5 rounded-xl bg-[#74b9ff]/15 hover:bg-[#74b9ff]/25 text-[#74b9ff] border border-[#74b9ff]/30 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-sm"
+          class="px-2 sm:px-3 py-1.5 rounded-xl bg-[#74b9ff]/15 hover:bg-[#74b9ff]/25 text-[#74b9ff] border border-[#74b9ff]/30 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-sm"
           title="Share lobby with friends"
           @click="showShareModal = true"
         >
@@ -194,21 +196,21 @@ function handleEditIdentityFromRoster() {
           <button
             v-if="room.phase === 'ideas'"
             type="button"
-            class="px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md hover:opacity-95 active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer"
             @click="emit('changePhase', 'voting')"
           >
             <Play class="w-3.5 h-3.5 fill-[#0b1220]" />
-            <span>Start Voting 🪙</span>
+            <span><span class="hidden sm:inline">Start </span>Voting 🪙</span>
           </button>
 
           <button
             v-else-if="room.phase === 'voting'"
             type="button"
-            class="px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md hover:opacity-95 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+            class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-sky-gradient text-[#0b1220] font-bold text-xs shadow-md hover:opacity-95 active:scale-95 flex items-center gap-1 sm:gap-1.5 cursor-pointer"
             @click="emit('changePhase', 'finished')"
           >
             <Trophy class="w-3.5 h-3.5" />
-            <span>Reveal Winner 🏆</span>
+            <span><span class="hidden sm:inline">Reveal </span>Winner 🏆</span>
           </button>
 
           <!-- 4. Host More Menu (•••) for Secondary Actions (Reset, End, etc.) -->

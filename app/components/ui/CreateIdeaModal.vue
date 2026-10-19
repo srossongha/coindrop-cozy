@@ -78,10 +78,10 @@ function handleDelete() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 bg-[#0b1220]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
   >
     <div
-      class="modal-dialog w-full max-w-lg bg-[#121a2b] border border-[#25314a] rounded-[20px] p-6 shadow-2xl relative"
+      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#121a2b] border border-[#25314a] rounded-[20px] p-4 sm:p-6 shadow-2xl relative"
     >
       <!-- Close button -->
       <button
@@ -93,17 +93,17 @@ function handleDelete() {
       </button>
 
       <!-- Header -->
-      <div class="flex items-center gap-2.5 mb-2">
+      <div class="flex items-center gap-2.5 mb-2 pr-6">
         <div
-          class="w-9 h-9 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff]"
+          class="w-9 h-9 rounded-xl bg-[#74b9ff]/15 border border-[#74b9ff]/30 flex items-center justify-center text-[#74b9ff] shrink-0"
         >
           <Sparkles class="w-4 h-4" />
         </div>
         <div>
-          <h2 class="text-base font-bold text-[#eaf2ff]">
+          <h2 class="text-sm sm:text-base font-bold text-[#eaf2ff]">
             {{ existingIdea ? 'Edit Card Option' : 'Propose a Card Idea' }}
           </h2>
-          <p class="text-xs text-[#8fa3c4]">
+          <p class="text-[11px] sm:text-xs text-[#8fa3c4]">
             {{
               existingIdea
                 ? 'Update details before voting locks in.'
@@ -113,7 +113,7 @@ function handleDelete() {
         </div>
       </div>
 
-      <form class="space-y-4 mt-4" @submit.prevent="handleSubmit">
+      <form class="space-y-3.5 sm:space-y-4 mt-4" @submit.prevent="handleSubmit">
         <!-- Title -->
         <div>
           <label
@@ -126,7 +126,7 @@ function handleDelete() {
             type="text"
             required
             placeholder="e.g. Suki Soup & Sichuan Mala Hotpot 🍲"
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
           />
         </div>
 
@@ -140,7 +140,7 @@ function handleDelete() {
           </label>
           <select
             v-model="category"
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-sm text-[#eaf2ff] focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-[#eaf2ff] focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
           >
             <option v-for="cat in CATEGORIES" :key="cat" :value="cat">
               {{ cat }}
@@ -161,7 +161,7 @@ function handleDelete() {
               v-model="priceNote"
               type="text"
               placeholder="e.g. ~$12–$15 / person"
-              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
             />
           </div>
 
@@ -176,7 +176,7 @@ function handleDelete() {
               v-model="link"
               type="url"
               placeholder="https://maps.google.com/..."
-              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+              class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
             />
           </div>
         </div>
@@ -192,7 +192,7 @@ function handleDelete() {
             v-model="description"
             rows="2"
             placeholder="e.g. Air-conditioned, opens until 2am, good reviews on vegetarian options."
-            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
+            class="w-full bg-[#0b1220] border border-[#25314a] rounded-xl px-3 py-2 text-base sm:text-xs text-[#eaf2ff] placeholder-[#8fa3c4]/50 focus:outline-none focus:ring-2 focus:ring-[#74b9ff]"
           />
         </div>
 
