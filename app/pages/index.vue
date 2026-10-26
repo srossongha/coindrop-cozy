@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { Sparkles, Plus, ArrowRight, Coins, Trophy, Users, Lightbulb } from 'lucide-vue-next'
 import type { CardIdea, CoinType, EnrichedCardIdea } from '~/types'
 import { useIdentity } from '~/composables/useIdentity'
@@ -56,53 +56,34 @@ const {
 const landingTab = ref<'create' | 'join'>('create')
 const slideDirection = ref<'slide-left' | 'slide-right'>('slide-left')
 const cardInnerRef = ref<HTMLElement | null>(null)
+const cardBoxRef = ref<HTMLElement | null>(null)
 const cardHeight = ref<number | null>(null)
-let cardResizeObserver: ResizeObserver | null = null
+const isMorphing = ref(false)
 
 function setLandingTab(tab: 'create' | 'join') {
   if (landingTab.value === tab) return
   slideDirection.value = tab === 'join' ? 'slide-left' : 'slide-right'
+
+  if (cardBoxRef.value) {
+    cardHeight.value = cardBoxRef.value.offsetHeight
+    isMorphing.value = true
+  }
+
   landingTab.value = tab
+
+  nextTick(() => {
+    if (cardInnerRef.value) {
+      cardHeight.value = cardInnerRef.value.scrollHeight + 2
+      setTimeout(() => {
+        cardHeight.value = null
+        isMorphing.value = false
+      }, 260)
+    } else {
+      cardHeight.value = null
+      isMorphing.value = false
+    }
+  })
 }
-
-function handleTransitionEnter() {
-  if (cardInnerRef.value) {
-    const height = cardInnerRef.value.offsetHeight
-    if (height > 100) {
-      cardHeight.value = Math.round(height) + 2
-    }
-  }
-}
-
-watch(
-  cardInnerRef,
-  el => {
-    if (cardResizeObserver) {
-      cardResizeObserver.disconnect()
-      cardResizeObserver = null
-    }
-    if (el && typeof ResizeObserver !== 'undefined') {
-      cardResizeObserver = new ResizeObserver(entries => {
-        for (const entry of entries) {
-          const target = entry.target as HTMLElement
-          const height = target.offsetHeight || entry.contentRect.height
-          if (height > 100) {
-            cardHeight.value = Math.round(height) + 2
-          }
-        }
-      })
-      cardResizeObserver.observe(el)
-    }
-  },
-  { immediate: true },
-)
-
-onBeforeUnmount(() => {
-  if (cardResizeObserver) {
-    cardResizeObserver.disconnect()
-    cardResizeObserver = null
-  }
-})
 
 const newRoomTitle = ref('')
 const joinRoomCode = ref('')
@@ -767,11 +748,13 @@ function handleLeaveLobby() {
 
           <!-- Main Interactive Card with Apple-grade Box Morphing -->
           <div
-            class="box-morph overflow-hidden rounded-[20px] bg-card border border-line shadow-2xl relative"
+            ref="cardBoxRef"
+            class="box-morph rounded-[20px] bg-card border border-line shadow-2xl relative"
+            :class="isMorphing ? 'overflow-hidden' : ''"
             :style="cardHeight ? { height: `${cardHeight}px` } : undefined"
           >
             <div ref="cardInnerRef" class="p-4 sm:p-6">
-              <Transition :name="slideDirection" mode="out-in" @enter="handleTransitionEnter">
+              <Transition :name="slideDirection" mode="out-in">
                 <!-- 1. CREATE TAB -->
                 <div v-if="landingTab === 'create'" key="create" class="space-y-4">
                   <div>

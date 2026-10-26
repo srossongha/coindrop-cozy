@@ -31,7 +31,11 @@ onMounted(() => {
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 
     // Ensure it's Safari and not Chrome (CriOS) or Firefox (FxiOS)
-    const isSafari = isIos && /safari/.test(ua) && !/crios|fxios|edgios|opt|opr/.test(ua)
+    const isSafari =
+      isIos &&
+      /safari/.test(ua) &&
+      !/crios|fxios|edgios|opt|opr/.test(ua) &&
+      !(window as unknown as { chrome?: unknown }).chrome
 
     if (isSafari) {
       // Small timeout so it doesn't jarringly pop up on first frame
