@@ -98,7 +98,7 @@ function handleEditIdentityFromRoster() {
 
 <template>
   <header
-    class="w-full bg-card/90 backdrop-blur-xl border-b border-line sticky top-0 z-40 transition-all pt-[env(safe-area-inset-top,0px)]"
+    class="w-full bg-card border-b border-line sticky top-0 z-40 transition-all pt-[env(safe-area-inset-top,0px)]"
   >
     <div
       class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3"
@@ -289,10 +289,10 @@ function handleEditIdentityFromRoster() {
       <Transition name="modal">
         <div
           v-if="showShareModal"
-          class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+          class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex flex-col items-center justify-start sm:justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
         >
           <div
-            class="modal-dialog w-full max-w-sm bg-card border border-line rounded-[20px] p-5 shadow-2xl relative my-auto"
+            class="modal-dialog w-full max-w-sm my-auto bg-card border border-line rounded-[20px] p-5 shadow-2xl relative shrink-0"
           >
             <button
               type="button"
@@ -383,10 +383,10 @@ function handleEditIdentityFromRoster() {
       <Transition name="modal">
         <div
           v-if="showRosterModal"
-          class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+          class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex flex-col items-center justify-start sm:justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
         >
           <div
-            class="modal-dialog w-full max-w-sm bg-card border border-line rounded-[20px] p-5 shadow-2xl relative my-auto"
+            class="modal-dialog w-full max-w-sm my-auto bg-card border border-line rounded-[20px] p-5 shadow-2xl relative shrink-0"
           >
             <button
               type="button"

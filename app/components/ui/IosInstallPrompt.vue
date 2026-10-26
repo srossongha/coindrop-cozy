@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { X } from 'lucide-vue-next'
 
+const route = useRoute()
 const showPrompt = ref(false)
+const isIosDevice = ref(true)
 const STORAGE_KEY = 'coindrop_pwa_install_dismissed'
+
+const isLobby = computed(() => Boolean(route.query.room))
 
 onMounted(() => {
   if (!import.meta.client || typeof window === 'undefined') return
@@ -24,24 +29,24 @@ onMounted(() => {
       return
     }
 
-    // 3. Detect iOS Safari
+    // 3. Detect mobile device (iOS, Android, or mobile responsive viewport)
     const ua = window.navigator.userAgent.toLowerCase()
     const isIos =
       /iphone|ipad|ipod/.test(ua) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 
-    // Ensure it's Safari and not Chrome (CriOS) or Firefox (FxiOS)
-    const isSafari =
-      isIos &&
-      /safari/.test(ua) &&
-      !/crios|fxios|edgios|opt|opr/.test(ua) &&
-      !(window as unknown as { chrome?: unknown }).chrome
+    isIosDevice.value = isIos
 
-    if (isSafari) {
-      // Small timeout so it doesn't jarringly pop up on first frame
+    const isMobile =
+      isIos ||
+      /android|mobile/.test(ua) ||
+      (typeof window !== 'undefined' && window.innerWidth <= 768)
+
+    if (isMobile) {
+      // Small delay so it appears smoothly without jarring layout shifts
       setTimeout(() => {
         showPrompt.value = true
-      }, 1200)
+      }, 900)
     }
   } catch {
     // Graceful fallback for sandboxed localStorage
@@ -61,11 +66,16 @@ function dismiss() {
 </script>
 
 <template>
-  <Transition name="dropdown-slide">
+  <Transition name="banner-slide">
     <aside
       v-if="showPrompt"
       aria-label="Install App"
-      class="fixed bottom-[max(1rem,env(safe-area-inset-bottom,0px))] left-3 right-3 sm:left-auto sm:right-4 sm:max-w-md z-50 p-3 sm:p-3.5 rounded-2xl bg-card/95 border border-line backdrop-blur-xl shadow-2xl flex items-center gap-3 animate-toast-pop select-none"
+      class="fixed left-3 right-3 sm:left-auto sm:right-4 sm:max-w-md z-35 p-3 sm:p-3.5 rounded-2xl bg-card border border-sky-end/40 shadow-2xl flex items-center gap-3 select-none shadow-sky-glow"
+      :class="[
+        isLobby
+          ? 'bottom-[max(5.5rem,calc(env(safe-area-inset-bottom,0px)+4.75rem))]'
+          : 'bottom-[max(1rem,env(safe-area-inset-bottom,0px))]',
+      ]"
     >
       <!-- App Icon -->
       <div
@@ -84,7 +94,7 @@ function dismiss() {
             PWA
           </span>
         </div>
-        <p class="text-[11px] text-text-muted leading-tight mt-0.5">
+        <p v-if="isIosDevice" class="text-[11px] text-text-muted leading-tight mt-0.5">
           Tap
           <span
             class="inline-flex items-center px-1 py-0.2 rounded bg-line/60 text-sky-soft font-semibold mx-0.5 align-baseline"
@@ -105,6 +115,10 @@ function dismiss() {
             Share
           </span>
           then <strong class="text-text-primary font-medium">Add to Home Screen</strong>
+        </p>
+        <p v-else class="text-[11px] text-text-muted leading-tight mt-0.5">
+          Tap browser menu <strong class="text-text-primary font-semibold">⋮</strong> then
+          <strong class="text-text-primary font-medium">Install App</strong>
         </p>
       </div>
 

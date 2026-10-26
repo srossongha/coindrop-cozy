@@ -97,6 +97,24 @@ body {
   transform: scale(0.95) translateY(8px);
 }
 
+/* Toast Pop Transition (centers with -50% translateX) */
+.toast-enter-active,
+.toast-leave-active {
+  transition:
+    opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -10px) scale(0.95);
+}
+.toast-enter-to,
+.toast-leave-from {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
 /* 2. Dropdown Pop Transition */
 .dropdown-slide-enter-active {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -108,6 +126,24 @@ body {
 .dropdown-slide-leave-to {
   opacity: 0;
   transform: scale(0.95) translateY(-4px);
+}
+
+/* Banner Slide Transition (for bottom banners without X shifting) */
+.banner-slide-enter-active,
+.banner-slide-leave-active {
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease-out;
+}
+.banner-slide-enter-from,
+.banner-slide-leave-to {
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+}
+.banner-slide-enter-to,
+.banner-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 /* 3. FLIP Card Transitions (Smooth grid reorder and addition) */
@@ -273,11 +309,11 @@ body {
 
 @keyframes toastSlideUp {
   0% {
-    transform: translate(-50%, 20px) scale(0.92);
+    transform: translateY(20px) scale(0.95);
     opacity: 0;
   }
   100% {
-    transform: translate(-50%, 0) scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }

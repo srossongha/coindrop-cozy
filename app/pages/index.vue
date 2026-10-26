@@ -386,13 +386,13 @@ function handleLeaveLobby() {
     />
 
     <!-- Global Toast Notification -->
-    <Transition name="modal">
+    <Transition name="toast">
       <div
         v-if="toastMessage"
-        class="modal-dialog fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-card border border-sky-end/60 text-sky-soft px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold shadow-sky-glow"
+        class="fixed top-[max(1rem,calc(env(safe-area-inset-top,0px)+0.5rem))] left-1/2 -translate-x-1/2 z-50 bg-card/95 border border-sky-end/60 text-sky-soft px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold shadow-sky-glow max-w-[90vw] backdrop-blur-md"
       >
         <Sparkles class="w-4 h-4 text-sky-end shrink-0" />
-        <span>{{ toastMessage }}</span>
+        <span class="truncate">{{ toastMessage }}</span>
       </div>
     </Transition>
 
@@ -656,7 +656,7 @@ function handleLeaveLobby() {
     <template v-else>
       <!-- Navigation Header -->
       <nav
-        class="w-full border-b border-line/80 bg-card/60 backdrop-blur-md sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]"
+        class="w-full border-b border-line bg-card sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)] shadow-xs"
       >
         <div
           class="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between"
@@ -697,20 +697,20 @@ function handleLeaveLobby() {
 
       <!-- Main Clean Landing Content -->
       <main
-        class="max-w-4xl mx-auto w-full px-3.5 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center relative z-10"
+        class="max-w-4xl mx-auto w-full px-3.5 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col justify-start relative z-10"
       >
         <!-- Hero Header -->
         <div class="text-center mb-5 sm:mb-10">
           <!-- Animated Brand Logo Visual -->
-          <div class="flex justify-center mb-3 sm:mb-4">
+          <div class="flex justify-center mb-3 sm:mb-4 pt-1">
             <div class="relative group">
               <div
-                class="absolute -inset-3 bg-gradient-to-r from-sky-start/20 via-gold/25 to-red-super/25 rounded-full blur-xl opacity-70 group-hover:opacity-100 transition duration-500 pointer-events-none"
+                class="absolute -inset-1.5 bg-gradient-to-r from-sky-start/15 via-gold/15 to-red-super/15 rounded-full blur-md opacity-50 group-hover:opacity-80 transition duration-500 pointer-events-none"
               />
               <img
                 src="/logo-mark.png"
                 alt="CoinDrop"
-                class="relative w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl transform group-hover:scale-105 transition duration-300"
+                class="relative w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-lg transform group-hover:scale-105 transition duration-300"
               />
             </div>
           </div>

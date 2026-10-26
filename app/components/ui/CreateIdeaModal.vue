@@ -78,10 +78,10 @@ function handleDelete() {
 
 <template>
   <div
-    class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+    class="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex flex-col items-center justify-start sm:justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
   >
     <div
-      class="modal-dialog w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-line rounded-[20px] p-4 sm:p-6 shadow-2xl relative my-auto"
+      class="modal-dialog w-full max-w-lg my-auto bg-card border border-line rounded-[20px] p-4 sm:p-6 shadow-2xl relative shrink-0"
     >
       <!-- Close button -->
       <button
