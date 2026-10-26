@@ -352,7 +352,7 @@ export function useLobby() {
           currentRoom.value.phase = newPhase
           if (newPhase === 'finished') {
             // Determine winner
-            let topScore = -1
+            let topScore = 0
             let topId: string | null = null
             for (const item of currentRoom.value.ideas) {
               let score = 0
@@ -364,7 +364,12 @@ export function useLobby() {
                 topId = item.id
               }
             }
-            currentRoom.value.winnerCardId = topId
+            currentRoom.value.winnerCardId =
+              topScore > 0
+                ? topId
+                : currentRoom.value.ideas.length === 1
+                  ? currentRoom.value.ideas[0].id
+                  : null
           }
           persistRoom(currentRoom.value)
         }
@@ -696,7 +701,7 @@ export function useLobby() {
     currentRoom.value.phase = newPhase
 
     if (newPhase === 'finished') {
-      let topScore = -1
+      let topScore = 0
       let topId: string | null = null
       for (const item of currentRoom.value.ideas) {
         let score = 0
@@ -708,7 +713,12 @@ export function useLobby() {
           topId = item.id
         }
       }
-      currentRoom.value.winnerCardId = topId
+      currentRoom.value.winnerCardId =
+        topScore > 0
+          ? topId
+          : currentRoom.value.ideas.length === 1
+            ? currentRoom.value.ideas[0].id
+            : null
     }
 
     persistRoom(currentRoom.value)

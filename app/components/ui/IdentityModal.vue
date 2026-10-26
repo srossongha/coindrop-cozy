@@ -3,17 +3,19 @@ import { ref, onMounted, watch } from 'vue'
 import { X, Sparkles, Check, Shuffle } from 'lucide-vue-next'
 import { useIdentity, DEFAULT_PERSONAS, EMOJI_OPTIONS } from '~/composables/useIdentity'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     isMandatory?: boolean
     title?: string
     description?: string
+    actionType?: 'create' | 'join' | 'edit'
   }>(),
   {
     isMandatory: false,
     title: 'Choose Your Persona',
     description:
       'Zero signup needed! Pick your nickname and cute emoji to join the decision lobby.',
+    actionType: 'edit',
   },
 )
 
@@ -163,12 +165,22 @@ function handleSave() {
       >
         <Check class="w-4 h-4" />
         <span>
-          <span class="sm:hidden">{{ props.isMandatory ? 'Join Lobby 🚀' : 'Save ✨' }}</span>
-          <span class="hidden sm:inline">{{
-            props.isMandatory ? 'Ready to Join Lobby 🚀' : 'Save Persona ✨'
-          }}</span>
+          <span v-if="actionType === 'create'">Create & Start Lobby 🚀</span>
+          <span v-else-if="actionType === 'join'">Join Lobby 🚀</span>
+          <span v-else>Save Persona ✨</span>
         </span>
       </button>
+
+      <!-- Quick skip if mandatory -->
+      <div v-if="isMandatory" class="mt-2 text-center">
+        <button
+          type="button"
+          class="text-xs text-text-muted hover:text-sky-soft transition-colors cursor-pointer"
+          @click="emit('close')"
+        >
+          Or continue as {{ currentEmoji }} {{ currentName }} &rarr;
+        </button>
+      </div>
     </div>
   </div>
 </template>

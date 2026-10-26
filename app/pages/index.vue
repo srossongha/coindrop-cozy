@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { Sparkles, Plus, ArrowRight, Coins, Trophy, Users, Lightbulb } from 'lucide-vue-next'
+import {
+  Sparkles,
+  Plus,
+  ArrowRight,
+  Coins,
+  Trophy,
+  Users,
+  Lightbulb,
+  RotateCcw,
+} from 'lucide-vue-next'
 import type { CardIdea, CoinType, EnrichedCardIdea } from '~/types'
 import { useIdentity } from '~/composables/useIdentity'
 import { useLobby } from '~/composables/useLobby'
@@ -97,6 +106,7 @@ const pendingAction = ref<'join' | 'create' | null>(null)
 // Modal states
 const showIdentityModal = ref(false)
 const isIdentityMandatory = ref(false)
+const identityModalActionType = ref<'create' | 'join' | 'edit'>('edit')
 const identityModalTitle = ref('Choose Your Persona')
 const identityModalDescription = ref(
   'Zero signup needed! Pick your nickname and cute emoji to join the decision lobby.',
@@ -125,9 +135,39 @@ function showToast(msg: string) {
 
 function handleOpenEditIdentity() {
   isIdentityMandatory.value = false
+  identityModalActionType.value = 'edit'
   identityModalTitle.value = 'Update Your Persona'
   identityModalDescription.value = 'Change your nickname or cute mascot emoji anytime!'
   showIdentityModal.value = true
+}
+
+function handleIdentityModalClose() {
+  showIdentityModal.value = false
+
+  // If there was a pending room join from an invite link, proceed with auto-assigned identity so user isn't stuck!
+  if (pendingAction.value === 'join' && pendingRoomCode.value) {
+    const target = pendingRoomCode.value
+    pendingRoomCode.value = null
+    pendingAction.value = null
+    isIdentityMandatory.value = false
+
+    const user = identity.value || initIdentity()
+    isJoining.value = true
+    joinLobby(target, user).then(result => {
+      isJoining.value = false
+      if (result.success) {
+        router.replace({ query: { room: target } })
+        showToast(`Welcome! Joined lobby: #${target} 🪙`)
+      } else {
+        showToast(`Lobby #${target} was not found or has expired.`)
+        router.replace({ query: {} })
+      }
+    })
+  } else {
+    pendingRoomCode.value = null
+    pendingAction.value = null
+    isIdentityMandatory.value = false
+  }
 }
 
 async function handleIdentitySaved() {
@@ -183,7 +223,8 @@ onMounted(async () => {
       pendingRoomCode.value = targetRoom
       pendingAction.value = 'join'
       isIdentityMandatory.value = true
-      identityModalTitle.value = 'Define Yourself First 🦫'
+      identityModalActionType.value = 'join'
+      identityModalTitle.value = 'Choose Your Name 🦫'
       identityModalDescription.value = `You were invited to room #${targetRoom}! Pick your nickname & mascot before joining your friends.`
       showIdentityModal.value = true
       return
@@ -211,18 +252,8 @@ onMounted(async () => {
   }
 })
 
-// Create lobby handler
+// Create lobby handler - Instant 1-click room creation with current persona
 async function handleCreateLobby() {
-  if (!hasDefinedSelf()) {
-    pendingAction.value = 'create'
-    isIdentityMandatory.value = true
-    identityModalTitle.value = 'Define Yourself First 🦫'
-    identityModalDescription.value =
-      'You are creating a new lobby! Choose your host nickname & mascot emoji.'
-    showIdentityModal.value = true
-    return
-  }
-
   const user = identity.value || initIdentity()
   isJoining.value = true
   const room = await createLobby(newRoomTitle.value, user)
@@ -232,21 +263,11 @@ async function handleCreateLobby() {
   showToast(`Created lobby ${room.id}! Share with friends.`)
 }
 
-// Join lobby handler
+// Join lobby handler - Instant join with current persona
 async function handleJoinLobby() {
   if (!joinRoomCode.value.trim()) return
   const raw = joinRoomCode.value.trim().toUpperCase()
   const code = raw.startsWith('DROP-') ? raw : `DROP-${raw}`
-
-  if (!hasDefinedSelf()) {
-    pendingRoomCode.value = code
-    pendingAction.value = 'join'
-    isIdentityMandatory.value = true
-    identityModalTitle.value = 'Define Yourself First 🦫'
-    identityModalDescription.value = `Joining lobby #${code}! Choose your nickname & mascot emoji.`
-    showIdentityModal.value = true
-    return
-  }
 
   const user = identity.value || initIdentity()
   isJoining.value = true
@@ -527,6 +548,33 @@ function handleLeaveLobby() {
                 >
               </span>
             </div>
+          </div>
+
+          <!-- Finished Phase: No Votes Cast Fallback Banner -->
+          <div
+            v-else-if="currentRoom.phase === 'finished' && !winningCard && enrichedIdeas.length > 0"
+            class="modal-dialog mb-6 sm:mb-8 p-4 sm:p-6 rounded-[20px] bg-card border border-line text-center"
+          >
+            <div
+              class="w-10 h-10 rounded-2xl bg-canvas border border-line mx-auto flex items-center justify-center text-xl mb-2"
+            >
+              🪙
+            </div>
+            <h3 class="text-sm sm:text-base font-bold text-text-primary mb-1">
+              No Coins Were Dropped
+            </h3>
+            <p class="text-xs text-text-muted max-w-sm mx-auto mb-3">
+              Voting ended before any gold or red coins were placed on options.
+            </p>
+            <button
+              v-if="isHost"
+              type="button"
+              class="px-3.5 py-1.5 rounded-xl bg-sky-gradient text-canvas font-bold text-xs shadow cursor-pointer transition-all active:scale-95 inline-flex items-center gap-1.5"
+              @click="changePhase('voting')"
+            >
+              <RotateCcw class="w-3.5 h-3.5" />
+              <span>Reopen Voting</span>
+            </button>
           </div>
         </Transition>
 
@@ -966,10 +1014,11 @@ function handleLeaveLobby() {
         <IdentityModal
           v-if="showIdentityModal"
           :is-mandatory="isIdentityMandatory"
+          :action-type="identityModalActionType"
           :title="identityModalTitle"
           :description="identityModalDescription"
           @save="handleIdentitySaved"
-          @close="showIdentityModal = false"
+          @close="handleIdentityModalClose"
         />
       </Transition>
     </Teleport>
