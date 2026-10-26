@@ -23,6 +23,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Prevent iOS Safari auto-zoom on mobile inputs */
+@media screen and (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 body {
   background-color: var(--color-canvas);
   color: var(--color-text-primary);

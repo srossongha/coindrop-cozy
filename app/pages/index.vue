@@ -376,7 +376,7 @@ function handleLeaveLobby() {
 
 <template>
   <div
-    class="min-h-screen bg-canvas text-text-primary flex flex-col font-sans selection:bg-sky-end/30 selection:text-sky-soft relative"
+    class="min-h-[100dvh] bg-canvas text-text-primary flex flex-col font-sans selection:bg-sky-end/30 selection:text-sky-soft relative"
   >
     <!-- Subtle top radial sky glow per design requirement -->
     <div
@@ -626,7 +626,9 @@ function handleLeaveLobby() {
     <!-- =================================================== -->
     <template v-else>
       <!-- Navigation Header -->
-      <nav class="w-full border-b border-line/80 bg-card/60 backdrop-blur-md sticky top-0 z-30">
+      <nav
+        class="w-full border-b border-line/80 bg-card/60 backdrop-blur-md sticky top-0 z-30 pt-[env(safe-area-inset-top,0px)]"
+      >
         <div
           class="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between"
         >
@@ -946,7 +948,7 @@ function handleLeaveLobby() {
 
       <!-- Real Product Clean Footer -->
       <footer
-        class="w-full border-t border-line/60 py-4 sm:py-6 px-4 mt-auto relative z-10 text-center"
+        class="w-full border-t border-line/60 py-4 sm:py-6 px-4 mt-auto relative z-10 text-center pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
       >
         <div
           class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-text-muted"

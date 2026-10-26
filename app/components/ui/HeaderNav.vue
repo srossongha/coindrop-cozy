@@ -21,7 +21,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 bg-canvas/90 backdrop-blur-xl border-b border-line">
+  <header
+    class="sticky top-0 z-40 bg-canvas/90 backdrop-blur-xl border-b border-line pt-[env(safe-area-inset-top,0px)]"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
       <!-- Brand Logo & Room Switcher -->
       <div class="flex items-center gap-3 min-w-0">

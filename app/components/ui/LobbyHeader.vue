@@ -98,7 +98,7 @@ function handleEditIdentityFromRoster() {
 
 <template>
   <header
-    class="w-full bg-card/90 backdrop-blur-xl border-b border-line sticky top-0 z-40 transition-all"
+    class="w-full bg-card/90 backdrop-blur-xl border-b border-line sticky top-0 z-40 transition-all pt-[env(safe-area-inset-top,0px)]"
   >
     <div
       class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3"
